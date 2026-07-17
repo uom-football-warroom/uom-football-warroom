@@ -1,0 +1,92 @@
+// Shared mock football data placeholder.
+import type { Club, Fixture } from "@/types/football";
+
+export const clubs: Club[] = [
+  {
+    id: "arsenal",
+    name: "Arsenal",
+    code: "ARS",
+    logo: "/images/clubs/arsenal.png",
+    country: "England",
+    competition: "Premier League",
+    supporters: "1.2M",
+  },
+  {
+    id: "liverpool",
+    name: "Liverpool",
+    code: "LIV",
+    logo: "/images/clubs/liverpool.png",
+    country: "England",
+    competition: "Premier League",
+    supporters: "2.5M",
+  },
+  {
+    id: "barcelona",
+    name: "FC Barcelona",
+    code: "BAR",
+    logo: "/images/clubs/barcelona.png",
+    country: "Spain",
+    competition: "La Liga",
+    supporters: "4.1M",
+  },
+  {
+    id: "real-madrid",
+    name: "Real Madrid",
+    code: "RMA",
+    logo: "/images/clubs/real-madrid.png",
+    country: "Spain",
+    competition: "La Liga",
+    supporters: "5.8M",
+  },
+  {
+    id: "bayern-munich",
+    name: "Bayern Munich",
+    code: "BAY",
+    logo: "/images/clubs/bayern-munich.png",
+    country: "Germany",
+    competition: "Bundesliga",
+    supporters: "1.9M",
+  },
+  {
+    id: "inter-milan",
+    name: "Inter Milan",
+    code: "INT",
+    logo: "/images/clubs/inter-milan.png",
+    country: "Italy",
+    competition: "Serie A",
+    supporters: "1.6M",
+  },
+];
+
+export const fixtures: Fixture[] = [
+  {
+    id: "real-barcelona",
+    competition: "La Liga",
+    homeClub: clubs[3],
+    awayClub: clubs[2],
+    date: "Saturday, 18 October",
+    time: "21:00",
+    venue: "Santiago Bernabéu",
+    status: "SCHEDULED",
+  },
+  {
+    id: "arsenal-liverpool",
+    competition: "Premier League",
+    homeClub: clubs[0],
+    awayClub: clubs[1],
+    date: "Sunday, 19 October",
+    time: "17:30",
+    venue: "Emirates Stadium",
+    status: "SCHEDULED",
+  },
+  {
+    id: "inter-bayern",
+    competition: "Champions League",
+    homeClub: clubs[5],
+    awayClub: clubs[4],
+    date: "Wednesday, 22 October",
+    time: "20:45",
+    venue: "San Siro",
+    status: "SCHEDULED",
+  },
+];
