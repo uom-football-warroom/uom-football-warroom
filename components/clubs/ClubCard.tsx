@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 import type { Club } from "@/types/football";
 
@@ -8,8 +9,14 @@ type ClubCardProps = {
 export default function ClubCard({ club }: ClubCardProps) {
   return (
     <article className="rounded-xl border border-slate-200 bg-white p-5 text-center shadow-sm transition hover:-translate-y-1 hover:shadow-md">
-      <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full border border-slate-200 bg-slate-50 text-sm font-black text-slate-800">
-        {club.code}
+      <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full border border-slate-200 bg-slate-50 p-2">
+        <Image
+          src={club.logo}
+          alt={`${club.name} logo`}
+          width={48}
+          height={48}
+          className="h-full w-full object-contain"
+        />
       </div>
 
       <h3 className="mt-4 font-bold text-slate-900">{club.name}</h3>
