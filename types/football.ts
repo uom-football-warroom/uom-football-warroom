@@ -2,13 +2,10 @@ export type Club = {
   id: string;
   name: string;
   code: string;
-  logo: string;
   country: string;
   competition: string;
   supporters: string;
 };
-
-export type FixtureStatus = "SCHEDULED" | "LIVE" | "FINISHED";
 
 export type Fixture = {
   id: string;
@@ -18,5 +15,5 @@ export type Fixture = {
   date: string;
   time: string;
   venue: string;
-  status: FixtureStatus;
+  status: "SCHEDULED" | "LIVE" | "COMPLETED";
 };
