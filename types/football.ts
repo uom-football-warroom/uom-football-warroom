@@ -2,6 +2,7 @@ export type Club = {
   id: string;
   name: string;
   code: string;
+  logo: string;
   country: string;
   competition: string;
   supporters: string;
