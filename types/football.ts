@@ -7,8 +7,17 @@ export type Club = {
   competition: string;
   supporters: string;
   stadium?: string;
+  stadiumCapacity?: number;
   founded?: number;
   description?: string;
+  comparison?: ClubComparison;
+};
+
+export type ClubComparison = {
+  leaguePosition?: number;
+  averageGoals?: number;
+  averagePossession?: number;
+  recentForm?: Array<"W" | "D" | "L">;
 };
 
 export type Fixture = {
@@ -26,9 +35,15 @@ export type Fixture = {
   matchMinute?: number;
   homeLineup?: Lineup;
   awayLineup?: Lineup;
+  headToHeadResults?: HeadToHeadResult[];
 };
 
 export type Lineup = {
   starting: string[];
   substitutes?: string[];
+};
+
+export type HeadToHeadResult = {
+  homeOutcome: "W" | "D" | "L";
+  score: string;
 };

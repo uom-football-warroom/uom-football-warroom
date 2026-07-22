@@ -2,7 +2,9 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import FixtureHero from "@/components/fixtures/FixtureHero";
 import LineupSection from "@/components/fixtures/LineupSection";
+import MatchComparison from "@/components/fixtures/MatchComparison";
 import RelatedFixtures from "@/components/fixtures/RelatedFixtures";
+import StadiumCapacityCard from "@/components/fixtures/StadiumCapacityCard";
 import Footer from "@/components/layout/Footer";
 import Navbar from "@/components/layout/Navbar";
 import { findFixtureById, fixtures } from "@/lib/mock-data";
@@ -34,11 +36,7 @@ export default async function FixturePage({ params }: FixturePageProps) {
 
   if (!fixture) notFound();
 
-  const relatedFixtures = fixtures.filter(
-    (candidate) =>
-      candidate.id !== fixture.id &&
-      candidate.competition === fixture.competition,
-  );
+  const relatedFixtures = getRelatedFixtures(fixture);
 
   return (
     <>
@@ -48,12 +46,15 @@ export default async function FixturePage({ params }: FixturePageProps) {
 
         <div className="mx-auto max-w-7xl space-y-12 px-5 py-10 lg:px-8 lg:py-14">
           <div className="grid items-start gap-6 lg:grid-cols-[minmax(17rem,0.8fr)_minmax(0,2fr)]">
-            <MatchInformation fixture={fixture} />
-            <MatchOverview fixture={fixture} />
+            <div className="space-y-6">
+              <MatchInformation fixture={fixture} />
+              <StadiumCapacityCard fixture={fixture} />
+            </div>
+            <MatchComparison fixture={fixture} />
           </div>
 
           <LineupSection fixture={fixture} />
-          <RelatedFixtures fixtures={relatedFixtures} />
+          <RelatedFixtures fixtures={relatedFixtures} competition={fixture.competition} />
 
           <section aria-labelledby="upcoming-features-title">
             <div>
@@ -97,36 +98,6 @@ function MatchInformation({ fixture }: { fixture: Fixture }) {
   );
 }
 
-function MatchOverview({ fixture }: { fixture: Fixture }) {
-  return (
-    <section className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm sm:p-8">
-      <p className="text-xs font-black uppercase tracking-wider text-green-700">Match Overview</p>
-      <h2 className="mt-2 text-xl font-black text-slate-950">
-        {fixture.homeClub.name} vs {fixture.awayClub.name}
-      </h2>
-      <p className="mt-3 text-sm leading-7 text-slate-600">
-        Follow this {fixture.competition} fixture and connect with football supporters following both clubs.
-      </p>
-      <div className="mt-7 grid grid-cols-[1fr_auto_1fr] items-center gap-4 border-t border-slate-200 pt-6 text-center">
-        <ClubSnapshot club={fixture.homeClub} />
-        <span className="text-xs font-black uppercase tracking-widest text-slate-400">Club comparison</span>
-        <ClubSnapshot club={fixture.awayClub} />
-      </div>
-    </section>
-  );
-}
-
-function ClubSnapshot({ club }: { club: Fixture["homeClub"] }) {
-  return (
-    <div>
-      <p className="text-sm font-black text-slate-950">{club.name}</p>
-      <p className="mt-1 text-xs text-slate-500">{club.country}</p>
-      <p className="mt-3 text-lg font-black text-green-700">{club.supporters}</p>
-      <p className="text-[10px] uppercase tracking-wide text-slate-400">Supporters</p>
-    </div>
-  );
-}
-
 function FeaturePlaceholder({ icon, title, description, phase }: { icon: string; title: string; description: string; phase: string }) {
   return (
     <article className="rounded-xl border border-slate-200 bg-slate-100 p-6 text-center text-slate-500">
@@ -151,4 +122,30 @@ function formatDate(fixture: Fixture) {
 
 function displayStatus(status: Fixture["status"]) {
   return status.charAt(0) + status.slice(1).toLocaleLowerCase();
+}
+
+function getRelatedFixtures(fixture: Fixture) {
+  const currentDate = fixture.dateISO
+    ? new Date(`${fixture.dateISO}T00:00:00Z`).getTime()
+    : 0;
+
+  return Array.from(
+    new Map(
+      fixtures
+        .filter(
+          (candidate) =>
+            candidate.id !== fixture.id &&
+            candidate.competition === fixture.competition,
+        )
+        .sort((a, b) => dateDistance(a, currentDate) - dateDistance(b, currentDate))
+        .map((candidate) => [candidate.id, candidate]),
+    ).values(),
+  ).slice(0, 3);
+}
+
+function dateDistance(fixture: Fixture, currentDate: number) {
+  if (!fixture.dateISO || !currentDate) return Number.MAX_SAFE_INTEGER;
+  return Math.abs(
+    new Date(`${fixture.dateISO}T00:00:00Z`).getTime() - currentDate,
+  );
 }
