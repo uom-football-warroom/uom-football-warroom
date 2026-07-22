@@ -1,5 +1,19 @@
 // Shared mock football data placeholder.
 import type { Club, Fixture } from "@/types/football";
+import type { Profile } from "@/types/profile";
+
+export const mockProfile: Profile = {
+  id: "demo-supporter",
+  displayName: "Demo Supporter",
+  username: "demo_supporter",
+  email: "supporter@example.com",
+  role: "Supporter",
+  tier: "New Fan",
+  memberSince: "January 2026",
+  accountStatus: "Active",
+  favouriteClubId: "arsenal",
+  notificationsEnabled: true,
+};
 
 export const clubs: Club[] = [
   {
