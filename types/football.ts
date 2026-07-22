@@ -17,9 +17,11 @@ export type Fixture = {
   homeClub: Club;
   awayClub: Club;
   date: string;
+  dateISO?: string;
   time: string;
   venue: string;
-  status: "SCHEDULED" | "LIVE" | "COMPLETED";
+  status: "SCHEDULED" | "LIVE" | "COMPLETED" | "POSTPONED" | "CANCELLED";
   homeScore?: number;
   awayScore?: number;
+  matchMinute?: number;
 };
