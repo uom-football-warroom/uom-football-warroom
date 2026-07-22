@@ -24,4 +24,11 @@ export type Fixture = {
   homeScore?: number;
   awayScore?: number;
   matchMinute?: number;
+  homeLineup?: Lineup;
+  awayLineup?: Lineup;
+};
+
+export type Lineup = {
+  starting: string[];
+  substitutes?: string[];
 };

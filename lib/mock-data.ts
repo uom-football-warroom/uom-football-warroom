@@ -170,3 +170,7 @@ export function getFixturesForClub(id: string) {
       fixture.homeClub.id === id || fixture.awayClub.id === id,
   );
 }
+
+export function findFixtureById(id: string) {
+  return fixtures.find((fixture) => fixture.id === id);
+}
