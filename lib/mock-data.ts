@@ -10,6 +10,10 @@ export const clubs: Club[] = [
     country: "England",
     competition: "Premier League",
     supporters: "1.2M",
+    stadium: "Emirates Stadium",
+    founded: 1886,
+    description:
+      "Arsenal is a historic English football club from North London, known for generations of passionate supporters and a proud domestic tradition.",
   },
   {
     id: "liverpool",
@@ -19,6 +23,10 @@ export const clubs: Club[] = [
     country: "England",
     competition: "Premier League",
     supporters: "2.5M",
+    stadium: "Anfield",
+    founded: 1892,
+    description:
+      "Liverpool is an English football club with a celebrated history, a global supporter community, and a famous matchday home at Anfield.",
   },
   {
     id: "barcelona",
@@ -28,6 +36,10 @@ export const clubs: Club[] = [
     country: "Spain",
     competition: "La Liga",
     supporters: "4.1M",
+    stadium: "Camp Nou",
+    founded: 1899,
+    description:
+      "FC Barcelona is a historic Catalan club with a worldwide following, a celebrated academy tradition, and deep roots in the city of Barcelona.",
   },
   {
     id: "real-madrid",
@@ -37,6 +49,10 @@ export const clubs: Club[] = [
     country: "Spain",
     competition: "La Liga",
     supporters: "5.8M",
+    stadium: "Santiago Bernabéu",
+    founded: 1902,
+    description:
+      "Real Madrid is a Spanish football club from the capital, supported around the world and renowned for a long history of domestic and European honours.",
   },
   {
     id: "bayern-munich",
@@ -46,6 +62,10 @@ export const clubs: Club[] = [
     country: "Germany",
     competition: "Bundesliga",
     supporters: "1.9M",
+    stadium: "Allianz Arena",
+    founded: 1900,
+    description:
+      "Bayern Munich is a German football club with a proud winning tradition, a vibrant home in Munich, and one of the country's largest supporter communities.",
   },
   {
     id: "inter-milan",
@@ -55,6 +75,10 @@ export const clubs: Club[] = [
     country: "Italy",
     competition: "Serie A",
     supporters: "1.6M",
+    stadium: "San Siro",
+    founded: 1908,
+    description:
+      "Inter Milan is an Italian football club with a rich history, loyal supporters, and an enduring connection to the city of Milan and the San Siro.",
   },
 ];
 
@@ -89,4 +113,51 @@ export const fixtures: Fixture[] = [
     venue: "San Siro",
     status: "SCHEDULED",
   },
+  {
+    id: "arsenal-real-result",
+    competition: "Champions League",
+    homeClub: clubs[0],
+    awayClub: clubs[3],
+    date: "Wednesday, 8 October",
+    time: "20:00",
+    venue: "Emirates Stadium",
+    status: "COMPLETED",
+    homeScore: 2,
+    awayScore: 1,
+  },
+  {
+    id: "liverpool-barcelona-result",
+    competition: "Champions League",
+    homeClub: clubs[1],
+    awayClub: clubs[2],
+    date: "Tuesday, 7 October",
+    time: "20:00",
+    venue: "Anfield",
+    status: "COMPLETED",
+    homeScore: 2,
+    awayScore: 2,
+  },
+  {
+    id: "bayern-inter-result",
+    competition: "Champions League",
+    homeClub: clubs[4],
+    awayClub: clubs[5],
+    date: "Wednesday, 1 October",
+    time: "20:00",
+    venue: "Allianz Arena",
+    status: "COMPLETED",
+    homeScore: 3,
+    awayScore: 1,
+  },
 ];
+
+export function findClubById(id: string) {
+  return clubs.find((club) => club.id === id);
+}
+
+export function getFixturesForClub(id: string) {
+  return fixtures.filter(
+    (fixture) =>
+      fixture.homeClub.id === id || fixture.awayClub.id === id,
+  );
+}

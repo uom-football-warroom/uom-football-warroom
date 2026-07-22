@@ -6,6 +6,9 @@ export type Club = {
   country: string;
   competition: string;
   supporters: string;
+  stadium?: string;
+  founded?: number;
+  description?: string;
 };
 
 export type Fixture = {
@@ -17,4 +20,6 @@ export type Fixture = {
   time: string;
   venue: string;
   status: "SCHEDULED" | "LIVE" | "COMPLETED";
+  homeScore?: number;
+  awayScore?: number;
 };
