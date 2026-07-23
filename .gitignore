@@ -44,3 +44,5 @@ Text/UOM_Football_War_Room_Project_Plan.md
 # Environment files
 .env*
 !.env.example
+
+/lib/generated/prisma
