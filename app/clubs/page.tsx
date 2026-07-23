@@ -1,7 +1,6 @@
-import ClubGrid from "@/components/clubs/ClubGrid";
+import ClubsList from "@/components/clubs/clubs-list";
 import Footer from "@/components/layout/Footer";
 import Navbar from "@/components/layout/Navbar";
-import { clubs } from "@/lib/mock-data";
 
 export default function ClubsPage() {
   return (
@@ -22,7 +21,7 @@ export default function ClubsPage() {
             </p>
           </div>
 
-          <ClubGrid clubs={clubs} />
+          <ClubsList />
         </section>
       </main>
       <Footer />

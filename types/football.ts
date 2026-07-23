@@ -13,6 +13,31 @@ export type Club = {
   comparison?: ClubComparison;
 };
 
+export type ApiClub = {
+  id: string;
+  externalId: number;
+  slug: string;
+  name: string;
+  shortName: string | null;
+  tla: string | null;
+  crestUrl: string | null;
+  country: string | null;
+  competition: string | null;
+  stadium: string | null;
+  stadiumCapacity: number | null;
+  founded: number | null;
+  manager: string | null;
+  websiteUrl: string | null;
+  createdAt: string;
+  updatedAt: string;
+};
+
+export type ClubsApiResponse = {
+  success: boolean;
+  data?: ApiClub[];
+  message?: string;
+};
+
 export type ClubComparison = {
   leaguePosition?: number;
   averageGoals?: number;
