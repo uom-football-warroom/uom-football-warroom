@@ -1,9 +1,8 @@
 import Image from "next/image";
 import Link from "next/link";
-import FixtureDirectory from "@/components/fixtures/FixtureDirectory";
+import FixturesList from "@/components/fixtures/fixtures-list";
 import Footer from "@/components/layout/Footer";
 import Navbar from "@/components/layout/Navbar";
-import { fixtures } from "@/lib/mock-data";
 
 export default function FixturesPage() {
   return (
@@ -26,7 +25,7 @@ export default function FixturesPage() {
           </div>
         </section>
 
-        <FixtureDirectory fixtures={fixtures} />
+        <FixturesList />
       </main>
       <Footer />
     </>

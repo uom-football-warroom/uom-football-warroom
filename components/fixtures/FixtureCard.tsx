@@ -1,16 +1,17 @@
 import Image from "next/image";
 import Link from "next/link";
-import type { Fixture } from "@/types/football";
+import type { ApiClub, ApiFixture, Fixture } from "@/types/football";
 
-type FixtureCardProps = {
-  fixture: Fixture;
-  variant?: "compact" | "directory";
-};
+type FixtureCardProps =
+  | { fixture: Fixture; variant?: "compact" }
+  | { fixture: ApiFixture; variant: "directory" };
 
-export default function FixtureCard({ fixture, variant = "compact" }: FixtureCardProps) {
-  if (variant === "directory") {
-    return <DirectoryFixtureCard fixture={fixture} />;
+export default function FixtureCard(props: FixtureCardProps) {
+  if (props.variant === "directory") {
+    return <DirectoryFixtureCard fixture={props.fixture} />;
   }
+
+  const fixture = props.fixture;
 
   return (
     <article className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm transition hover:-translate-y-1 hover:shadow-md">
@@ -57,9 +58,9 @@ export default function FixtureCard({ fixture, variant = "compact" }: FixtureCar
   );
 }
 
-function DirectoryFixtureCard({ fixture }: { fixture: Fixture }) {
+function DirectoryFixtureCard({ fixture }: { fixture: ApiFixture }) {
   const hasScore =
-    fixture.homeScore !== undefined && fixture.awayScore !== undefined;
+    fixture.homeScore !== null && fixture.awayScore !== null;
   const isLive = fixture.status === "LIVE";
   const isInactive =
     fixture.status === "POSTPONED" || fixture.status === "CANCELLED";
@@ -83,16 +84,12 @@ function DirectoryFixtureCard({ fixture }: { fixture: Fixture }) {
                 {fixture.homeScore} - {fixture.awayScore}
               </p>
               <p className={`mt-1 text-[10px] font-bold uppercase ${isLive ? "text-red-600" : "text-slate-400"}`}>
-                {isLive && fixture.matchMinute
-                  ? `${fixture.matchMinute}′`
-                  : fixture.status === "COMPLETED"
-                    ? "Full time"
-                    : fixture.status}
+                {fixture.status === "COMPLETED" ? "Full time" : fixture.status}
               </p>
             </>
           ) : (
             <p className={`text-xl font-black ${isInactive ? "text-slate-400" : "text-green-700"}`}>
-              {isInactive ? "TBC" : fixture.time}
+              {isInactive ? "TBC" : formatFixtureTime(fixture.startTime)}
             </p>
           )}
         </div>
@@ -100,7 +97,9 @@ function DirectoryFixtureCard({ fixture }: { fixture: Fixture }) {
       </div>
 
       <div className="mt-7 flex items-center justify-between gap-4 border-t border-slate-200 pt-4">
-        <p className="min-w-0 truncate text-xs text-slate-500">⌖ {fixture.venue}</p>
+        <p className="min-w-0 truncate text-xs text-slate-500">
+          ⌖ {fixture.venue || "Venue unavailable"}
+        </p>
         <Link
           href={`/fixtures/${fixture.id}`}
           className="shrink-0 text-xs font-bold text-green-700 outline-none transition hover:text-green-800 focus-visible:ring-2 focus-visible:ring-green-600 focus-visible:ring-offset-2"
@@ -112,7 +111,7 @@ function DirectoryFixtureCard({ fixture }: { fixture: Fixture }) {
   );
 }
 
-function StatusBadge({ fixture }: { fixture: Fixture }) {
+function StatusBadge({ fixture }: { fixture: ApiFixture }) {
   const styles = {
     SCHEDULED: "bg-slate-100 text-slate-600",
     LIVE: "bg-red-100 text-red-700",
@@ -129,15 +128,43 @@ function StatusBadge({ fixture }: { fixture: Fixture }) {
   );
 }
 
-function DirectoryTeam({ club }: { club: Fixture["homeClub"] }) {
+function DirectoryTeam({ club }: { club: ApiClub }) {
+  const crestUrl = club.crestUrl?.trim();
+  const fallbackText =
+    club.tla?.trim() || club.name.charAt(0).toUpperCase();
+
   return (
     <div className="min-w-0 text-center">
       <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-lg bg-slate-50 p-2.5 sm:h-20 sm:w-20">
-        <Image src={club.logo} alt={`${club.name} crest`} width={64} height={64} className="h-full w-full object-contain" />
+        {crestUrl ? (
+          <Image
+            src={crestUrl}
+            alt={`${club.name} crest`}
+            width={64}
+            height={64}
+            className="h-full w-full object-contain"
+          />
+        ) : (
+          <span className="flex h-full w-full items-center justify-center rounded-lg bg-green-50 text-sm font-black text-green-700 sm:text-base">
+            {fallbackText}
+          </span>
+        )}
       </div>
       <p className="mt-3 truncate text-sm font-black text-slate-950 sm:text-base">{club.name}</p>
     </div>
   );
+}
+
+function formatFixtureTime(value: string) {
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return "Time unavailable";
+
+  return new Intl.DateTimeFormat("en-GB", {
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: false,
+    timeZone: "UTC",
+  }).format(date);
 }
 
 type TeamProps = {

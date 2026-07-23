@@ -15,7 +15,7 @@ export type Club = {
 
 export type ApiClub = {
   id: string;
-  externalId: number;
+  externalId: number | null;
   slug: string;
   name: string;
   shortName: string | null;
@@ -35,6 +35,30 @@ export type ApiClub = {
 export type ClubsApiResponse = {
   success: boolean;
   data?: ApiClub[];
+  message?: string;
+};
+
+export type ApiFixture = {
+  id: string;
+  externalId: number | null;
+  competition: string;
+  competitionCode: string | null;
+  matchday: number | null;
+  homeClubId: string;
+  awayClubId: string;
+  startTime: string;
+  venue: string | null;
+  status: "SCHEDULED" | "LIVE" | "COMPLETED" | "POSTPONED" | "CANCELLED";
+  homeScore: number | null;
+  awayScore: number | null;
+  referee: string | null;
+  homeClub: ApiClub;
+  awayClub: ApiClub;
+};
+
+export type FixturesApiResponse = {
+  success: boolean;
+  data?: ApiFixture[];
   message?: string;
 };
 
