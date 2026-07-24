@@ -62,6 +62,27 @@ export type FixturesApiResponse = {
   message?: string;
 };
 
+type ApiFixtureFields = Omit<ApiFixture, "homeClub" | "awayClub">;
+
+export type ApiClubHomeFixture = ApiFixtureFields & {
+  awayClub: ApiClub;
+};
+
+export type ApiClubAwayFixture = ApiFixtureFields & {
+  homeClub: ApiClub;
+};
+
+export type ApiClubDetails = ApiClub & {
+  homeFixtures: ApiClubHomeFixture[];
+  awayFixtures: ApiClubAwayFixture[];
+};
+
+export type ClubDetailsApiResponse = {
+  success: boolean;
+  data?: ApiClubDetails;
+  message?: string;
+};
+
 export type ClubComparison = {
   leaguePosition?: number;
   averageGoals?: number;
