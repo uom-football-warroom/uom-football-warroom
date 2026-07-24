@@ -40,10 +40,6 @@ export default function MatchComparison({ fixture }: { fixture: ApiFixture }) {
         </div>
       </div>
 
-      <div className="mt-7 border-t border-slate-200 pt-6">
-        <h3 className="text-[10px] font-bold uppercase tracking-wider text-slate-500">Last head-to-head results</h3>
-        <p className="mt-3 text-sm text-slate-500">Head-to-head results are not available for this fixture.</p>
-      </div>
     </section>
   );
 }
