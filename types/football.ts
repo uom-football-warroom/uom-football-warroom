@@ -38,6 +38,13 @@ export type ClubsApiResponse = {
   message?: string;
 };
 
+export type FixtureStatus =
+  | "SCHEDULED"
+  | "LIVE"
+  | "COMPLETED"
+  | "POSTPONED"
+  | "CANCELLED";
+
 export type ApiFixture = {
   id: string;
   externalId: number | null;
@@ -48,10 +55,12 @@ export type ApiFixture = {
   awayClubId: string;
   startTime: string;
   venue: string | null;
-  status: "SCHEDULED" | "LIVE" | "COMPLETED" | "POSTPONED" | "CANCELLED";
+  status: FixtureStatus;
   homeScore: number | null;
   awayScore: number | null;
   referee: string | null;
+  createdAt: string;
+  updatedAt: string;
   homeClub: ApiClub;
   awayClub: ApiClub;
 };
@@ -59,6 +68,12 @@ export type ApiFixture = {
 export type FixturesApiResponse = {
   success: boolean;
   data?: ApiFixture[];
+  message?: string;
+};
+
+export type FixtureDetailsApiResponse = {
+  success: boolean;
+  data?: ApiFixture;
   message?: string;
 };
 
@@ -99,7 +114,7 @@ export type Fixture = {
   dateISO?: string;
   time: string;
   venue: string;
-  status: "SCHEDULED" | "LIVE" | "COMPLETED" | "POSTPONED" | "CANCELLED";
+  status: FixtureStatus;
   homeScore?: number;
   awayScore?: number;
   matchMinute?: number;

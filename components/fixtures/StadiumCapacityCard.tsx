@@ -1,6 +1,6 @@
-import type { Fixture } from "@/types/football";
+import type { ApiFixture } from "@/types/football";
 
-export default function StadiumCapacityCard({ fixture }: { fixture: Fixture }) {
+export default function StadiumCapacityCard({ fixture }: { fixture: ApiFixture }) {
   const capacity =
     fixture.venue === fixture.homeClub.stadium
       ? fixture.homeClub.stadiumCapacity
@@ -15,7 +15,7 @@ export default function StadiumCapacityCard({ fixture }: { fixture: Fixture }) {
       ) : (
         <p className="mt-3 text-lg font-black">Capacity unavailable</p>
       )}
-      <p className="mt-2 text-sm font-semibold text-slate-200">⌂ {fixture.venue}</p>
+      <p className="mt-2 text-sm font-semibold text-slate-200">⌂ {fixture.venue || "Venue unavailable"}</p>
       <p className="mt-3 max-w-xs text-xs leading-5 text-slate-400">Expected to host a memorable matchday crowd of football supporters.</p>
     </section>
   );
