@@ -55,3 +55,74 @@ export type FootballDataErrorResponse = {
   message?: string;
   errorCode?: number;
 };
+
+export type FootballDataMatchStatus =
+  | "SCHEDULED"
+  | "TIMED"
+  | "IN_PLAY"
+  | "PAUSED"
+  | "EXTRA_TIME"
+  | "PENALTY_SHOOTOUT"
+  | "FINISHED"
+  | "SUSPENDED"
+  | "POSTPONED"
+  | "CANCELLED"
+  | "AWARDED";
+
+export type FootballDataMatchTeam = {
+  id: number | null;
+  name?: string | null;
+  shortName?: string | null;
+  tla?: string | null;
+  crest?: string | null;
+};
+
+export type FootballDataScoreValue = {
+  home: number | null;
+  away: number | null;
+};
+
+export type FootballDataScore = {
+  winner?: string | null;
+  duration?: string | null;
+  fullTime?: FootballDataScoreValue | null;
+  halfTime?: FootballDataScoreValue | null;
+  regularTime?: FootballDataScoreValue | null;
+  extraTime?: FootballDataScoreValue | null;
+  penalties?: FootballDataScoreValue | null;
+};
+
+export type FootballDataReferee = {
+  id?: number | null;
+  name?: string | null;
+  type?: string | null;
+  nationality?: string | null;
+};
+
+export type FootballDataMatch = {
+  id: number;
+  competition: FootballDataCompetition;
+  utcDate: string;
+  status: FootballDataMatchStatus;
+  matchday?: number | null;
+  stage?: string | null;
+  group?: string | null;
+  venue?: string | null;
+  lastUpdated?: string | null;
+  homeTeam: FootballDataMatchTeam;
+  awayTeam: FootballDataMatchTeam;
+  score: FootballDataScore;
+  referees?: FootballDataReferee[] | null;
+};
+
+export type FootballDataMatchesResponse = {
+  filters?: Record<string, unknown>;
+  resultSet?: {
+    count?: number;
+    first?: string | null;
+    last?: string | null;
+    played?: number;
+  };
+  competition: FootballDataCompetition;
+  matches: FootballDataMatch[];
+};

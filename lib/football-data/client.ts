@@ -1,5 +1,6 @@
 import type {
   FootballDataErrorResponse,
+  FootballDataMatchesResponse,
   FootballDataTeamsResponse,
 } from "@/lib/football-data/types";
 
@@ -98,5 +99,19 @@ export async function getCompetitionTeams(
 
   return footballDataRequest<FootballDataTeamsResponse>(
     `/competitions/${encodeURIComponent(normalizedCode)}/teams`,
+  );
+}
+
+export async function getCompetitionMatches(
+  competitionCode: string,
+): Promise<FootballDataMatchesResponse> {
+  const normalizedCode = competitionCode.trim().toUpperCase();
+
+  if (!/^[A-Z0-9]+$/.test(normalizedCode)) {
+    throw new Error("Invalid football competition code");
+  }
+
+  return footballDataRequest<FootballDataMatchesResponse>(
+    `/competitions/${encodeURIComponent(normalizedCode)}/matches`,
   );
 }
