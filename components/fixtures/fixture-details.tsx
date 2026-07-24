@@ -3,12 +3,14 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import FixtureHero from "@/components/fixtures/FixtureHero";
+import HeadToHeadSection from "@/components/fixtures/HeadToHeadSection";
 import LineupSection from "@/components/fixtures/LineupSection";
 import MatchComparison from "@/components/fixtures/MatchComparison";
-import RelatedFixtures from "@/components/fixtures/RelatedFixtures";
+import OtherFixturesSection from "@/components/fixtures/OtherFixturesSection";
 import StadiumCapacityCard from "@/components/fixtures/StadiumCapacityCard";
 import type {
   ApiFixture,
+  FixtureDetailsApiData,
   FixtureDetailsApiResponse,
   FixtureStatus,
 } from "@/types/football";
@@ -18,7 +20,7 @@ type FixtureDetailsProps = {
 };
 
 export default function FixtureDetails({ fixtureId }: FixtureDetailsProps) {
-  const [fixture, setFixture] = useState<ApiFixture | null>(null);
+  const [details, setDetails] = useState<FixtureDetailsApiData | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [errorStatus, setErrorStatus] = useState<number | null>(null);
 
@@ -40,7 +42,7 @@ export default function FixtureDetails({ fixtureId }: FixtureDetailsProps) {
           return;
         }
 
-        setFixture(result.data);
+        setDetails(result.data);
       } catch (fetchError) {
         if (
           fetchError instanceof DOMException &&
@@ -75,7 +77,7 @@ export default function FixtureDetails({ fixtureId }: FixtureDetailsProps) {
     );
   }
 
-  if (errorStatus !== null || !fixture) {
+  if (errorStatus !== null || !details) {
     return (
       <StatePanel
         title="Unable to load fixture"
@@ -84,6 +86,13 @@ export default function FixtureDetails({ fixtureId }: FixtureDetailsProps) {
       />
     );
   }
+
+  const {
+    fixture,
+    headToHead,
+    headToHeadUnavailable,
+    otherFixtures,
+  } = details;
 
   return (
     <>
@@ -98,8 +107,19 @@ export default function FixtureDetails({ fixtureId }: FixtureDetailsProps) {
           <MatchComparison fixture={fixture} />
         </div>
 
+        <HeadToHeadSection
+          headToHead={headToHead}
+          unavailable={headToHeadUnavailable}
+          selectedHomeClub={fixture.homeClub}
+          selectedAwayClub={fixture.awayClub}
+        />
+        <OtherFixturesSection
+          competitionName={fixture.competition}
+          matchday={fixture.matchday}
+          otherFixtures={otherFixtures}
+        />
+
         <LineupSection fixture={fixture} />
-        <RelatedFixtures fixtures={[]} competition={fixture.competition} />
 
         <section aria-labelledby="upcoming-features-title">
           <div>

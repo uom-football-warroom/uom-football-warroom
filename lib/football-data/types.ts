@@ -126,3 +126,8 @@ export type FootballDataMatchesResponse = {
   competition: FootballDataCompetition;
   matches: FootballDataMatch[];
 };
+
+export type FootballDataHeadToHeadResponse = {
+  aggregates?: Record<string, unknown>;
+  matches: FootballDataMatch[];
+};

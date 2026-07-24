@@ -71,9 +71,38 @@ export type FixturesApiResponse = {
   message?: string;
 };
 
+export type FixtureHeadToHeadTeam = {
+  externalId: number | null;
+  name: string;
+  shortName: string | null;
+  tla: string | null;
+  crestUrl: string | null;
+};
+
+export type FixtureHeadToHeadItem = {
+  externalId: number;
+  utcDate: string;
+  status: string;
+  competition: {
+    name: string | null;
+    code: string | null;
+  };
+  homeTeam: FixtureHeadToHeadTeam;
+  awayTeam: FixtureHeadToHeadTeam;
+  homeScore: number | null;
+  awayScore: number | null;
+};
+
+export type FixtureDetailsApiData = {
+  fixture: ApiFixture;
+  headToHead: FixtureHeadToHeadItem[];
+  headToHeadUnavailable: boolean;
+  otherFixtures: ApiFixture[];
+};
+
 export type FixtureDetailsApiResponse = {
   success: boolean;
-  data?: ApiFixture;
+  data?: FixtureDetailsApiData;
   message?: string;
 };
 

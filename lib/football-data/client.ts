@@ -1,5 +1,6 @@
 import type {
   FootballDataErrorResponse,
+  FootballDataHeadToHeadResponse,
   FootballDataMatchesResponse,
   FootballDataTeamsResponse,
 } from "@/lib/football-data/types";
@@ -113,5 +114,17 @@ export async function getCompetitionMatches(
 
   return footballDataRequest<FootballDataMatchesResponse>(
     `/competitions/${encodeURIComponent(normalizedCode)}/matches`,
+  );
+}
+
+export async function getMatchHeadToHead(
+  externalMatchId: number,
+): Promise<FootballDataHeadToHeadResponse> {
+  if (!Number.isInteger(externalMatchId) || externalMatchId <= 0) {
+    throw new Error("Invalid football-data.org match ID");
+  }
+
+  return footballDataRequest<FootballDataHeadToHeadResponse>(
+    `/matches/${externalMatchId}/head2head`,
   );
 }
