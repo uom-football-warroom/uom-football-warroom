@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server'
 
+import { FixtureStatus } from '../../../../generated/prisma/enums'
 import { prisma } from '@/lib/db'
 
 type RouteContext = {
@@ -67,9 +68,34 @@ export async function GET(_request: Request, context: RouteContext) {
       )
     }
 
+    const recentResults = await prisma.fixture.findMany({
+      where: {
+        status: FixtureStatus.COMPLETED,
+        OR: [
+          {
+            homeClubId: club.id,
+          },
+          {
+            awayClubId: club.id,
+          },
+        ],
+      },
+      include: {
+        homeClub: true,
+        awayClub: true,
+      },
+      orderBy: {
+        startTime: 'desc',
+      },
+      take: 5,
+    })
+
     return NextResponse.json({
       success: true,
-      data: club,
+      data: {
+        ...club,
+        recentResults,
+      },
     })
   } catch (error) {
     console.error('Failed to fetch club:', error)

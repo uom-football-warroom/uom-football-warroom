@@ -107,9 +107,7 @@ export default function ClubDetails({ clubId }: ClubDetailsProps) {
   const upcoming = fixtures.filter(
     (fixture) => fixture.status === "SCHEDULED" || fixture.status === "LIVE",
   );
-  const completed = fixtures.filter(
-    (fixture) => fixture.status === "COMPLETED",
-  );
+  const completed = club.recentResults;
   const recentForm = completed.flatMap((fixture) => {
     if (fixture.homeScore === null || fixture.awayScore === null) return [];
 

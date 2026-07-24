@@ -119,6 +119,7 @@ export type ApiClubAwayFixture = ApiFixtureFields & {
 export type ApiClubDetails = ApiClub & {
   homeFixtures: ApiClubHomeFixture[];
   awayFixtures: ApiClubAwayFixture[];
+  recentResults: ApiFixture[];
 };
 
 export type ClubDetailsApiResponse = {

@@ -28,7 +28,7 @@ function resultFor(fixture: ApiFixture, clubId: string) {
   const opponentScore = isHome ? fixture.awayScore : fixture.homeScore;
 
   return {
-    score: `${clubScore} - ${opponentScore}`,
+    score: `${fixture.homeScore} - ${fixture.awayScore}`,
     outcome: clubScore > opponentScore ? "W" : clubScore < opponentScore ? "L" : "D",
   } as const;
 }
@@ -112,19 +112,43 @@ export function RecentResults({ club, completed }: RecentResultsProps) {
         </div>
         {completed.length ? (
           <ul className="mt-5 divide-y divide-slate-100">
-            {completed.slice(0, 3).map((fixture) => {
-              const opponent = opponentFor(fixture, club.id);
+            {completed.slice(0, 5).map((fixture) => {
               const result = resultFor(fixture, club.id);
               return (
-                <li key={fixture.id} className="grid grid-cols-[1fr_auto] items-center gap-4 py-4 sm:grid-cols-[9rem_1fr_auto]">
-                  <p className="text-xs uppercase text-slate-500">{formatDate(fixture.startTime)}</p>
-                  <p className="text-sm font-bold text-slate-900 sm:col-start-2">vs {opponent.name}</p>
-                  {result && (
-                    <div className="col-start-2 row-span-2 row-start-1 flex items-center gap-3 sm:col-start-3 sm:row-span-1">
-                      <span className="font-black text-slate-950">{result.score}</span>
+                <li key={fixture.id}>
+                  <Link
+                    href={`/fixtures/${fixture.id}`}
+                    className="block py-4 outline-none transition hover:bg-slate-50 focus-visible:ring-2 focus-visible:ring-green-600 focus-visible:ring-inset"
+                  >
+                    <div className="flex items-center justify-between gap-4">
+                      <div className="min-w-0">
+                        <p className="text-xs uppercase text-slate-500">
+                          {formatDate(fixture.startTime)}
+                        </p>
+                        <p className="mt-1 truncate text-[10px] font-bold uppercase tracking-wide text-green-700">
+                          {fixture.competition}
+                        </p>
+                      </div>
+                      {result && (
                       <span className={`flex h-6 w-6 items-center justify-center rounded text-xs font-black ${result.outcome === "W" ? "bg-green-100 text-green-700" : result.outcome === "L" ? "bg-red-100 text-red-700" : "bg-amber-100 text-amber-700"}`}>{result.outcome}</span>
+                      )}
                     </div>
-                  )}
+
+                    <div className="mt-4 grid grid-cols-[1fr_auto_1fr] items-center gap-3">
+                      <ResultTeam
+                        club={fixture.homeClub}
+                        selected={fixture.homeClub.id === club.id}
+                      />
+                      <span className="min-w-14 text-center font-black text-slate-950">
+                        {result?.score ?? "—"}
+                      </span>
+                      <ResultTeam
+                        club={fixture.awayClub}
+                        selected={fixture.awayClub.id === club.id}
+                        alignRight
+                      />
+                    </div>
+                  </Link>
                 </li>
               );
             })}
@@ -133,6 +157,35 @@ export function RecentResults({ club, completed }: RecentResultsProps) {
           <p className="mt-4 text-sm text-slate-500">No recent results are available.</p>
         )}
       </section>
+  );
+}
+
+function ResultTeam({
+  club,
+  selected,
+  alignRight = false,
+}: {
+  club: ApiClub;
+  selected: boolean;
+  alignRight?: boolean;
+}) {
+  return (
+    <div
+      className={`flex min-w-0 items-center gap-2 ${
+        alignRight ? "flex-row-reverse text-right" : ""
+      }`}
+    >
+      <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-slate-50 p-1">
+        <ClubCrest club={club} />
+      </div>
+      <p
+        className={`truncate text-sm font-bold ${
+          selected ? "text-green-700" : "text-slate-900"
+        }`}
+      >
+        {club.name}
+      </p>
+    </div>
   );
 }
 
