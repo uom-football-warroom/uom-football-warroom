@@ -5,37 +5,25 @@ import Link from "next/link";
 import { type FormEvent, useState } from "react";
 import LogoutButton from "@/components/auth/LogoutButton";
 import PhasePreviewCard from "@/components/profile/PhasePreviewCard";
-import type { Club } from "@/types/football";
 import type { Profile } from "@/types/profile";
 
 type ProfileDashboardProps = {
   profile: Profile;
-  clubs: Club[];
 };
 
 type Errors = Partial<Record<"displayName" | "username" | "email", string>>;
 
-export default function ProfileDashboard({ profile, clubs }: ProfileDashboardProps) {
-  const [favouriteClubId, setFavouriteClubId] = useState(profile.favouriteClubId ?? "");
-  const [selectingClub, setSelectingClub] = useState(false);
-  const favouriteClub = clubs.find((club) => club.id === favouriteClubId);
-
-  function chooseClub(id: string) {
-    setFavouriteClubId(id);
-    setSelectingClub(false);
-    // TODO: Persist the favourite club through the authenticated profile API.
-  }
-
+export default function ProfileDashboard({ profile }: ProfileDashboardProps) {
   return (
     <div className="grid items-start gap-6 lg:grid-cols-[minmax(0,1.45fr)_minmax(19rem,0.8fr)]">
       <div className="space-y-6">
         <ProfileHeader profile={profile} />
-        <FavouriteClubCard club={favouriteClub} clubs={clubs} selecting={selectingClub} onStartSelecting={() => setSelectingClub(true)} onCancel={() => setSelectingClub(false)} onChoose={chooseClub} />
+        <FavouriteClubCard club={profile.favouriteClub ?? null} />
         <AccountSettingsForm profile={profile} />
       </div>
 
       <aside className="space-y-5">
-        <AccountSummary profile={profile} favouriteClub={favouriteClub} />
+        <AccountSummary profile={profile} />
         <PhasePreviewCard title="War Room Activity" phase="Phase 2" description="Your War Room post count and recent match discussions will appear here after live match rooms are implemented." items={["War Room posts", "Matches discussed", "Recent discussion activity"]} />
         <PhasePreviewCard title="Prediction Statistics" phase="Phase 3" description="Prediction history, correct predictions and win rate will appear here after virtual-coin predictions are implemented." items={["Total predictions", "Correct predictions", "Prediction win rate", "Recent predictions"]} />
         <PhasePreviewCard title="War Coin Wallet" phase="Phase 3" description="Your virtual coin balance and transaction history will appear here after the prediction economy is implemented. War Coins are virtual and have no real-money value." items={["Coin balance", "Coins earned", "Coins spent", "Transaction history"]} />
@@ -52,7 +40,20 @@ function ProfileHeader({ profile }: { profile: Profile }) {
       <div aria-hidden="true" className="absolute -right-16 -top-16 h-56 w-56 rounded-full bg-green-500/10 blur-2xl" />
       <div className="relative flex flex-col items-center gap-6 text-center sm:flex-row sm:text-left">
         <div className="relative">
-          <div className="flex h-28 w-28 items-center justify-center rounded-full border-4 border-green-500 bg-slate-800 text-3xl font-black shadow-lg">{initials}</div>
+          <div className="relative flex h-28 w-28 items-center justify-center overflow-hidden rounded-full border-4 border-green-500 bg-slate-800 text-3xl font-black shadow-lg">
+            {profile.avatarUrl ? (
+              <Image
+                src={profile.avatarUrl}
+                alt={`${profile.displayName} avatar`}
+                fill
+                sizes="112px"
+                unoptimized
+                className="object-cover"
+              />
+            ) : (
+              initials
+            )}
+          </div>
           <button type="button" aria-label="Edit avatar" title="Avatar editing is not yet connected" className="absolute bottom-0 right-0 flex h-9 w-9 items-center justify-center rounded-full bg-green-600 text-sm outline-none transition hover:bg-green-500 focus-visible:ring-2 focus-visible:ring-green-300 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-950">✎</button>
         </div>
         <div className="min-w-0 flex-1">
@@ -72,44 +73,46 @@ function ProfileHeader({ profile }: { profile: Profile }) {
   );
 }
 
-function FavouriteClubCard({ club, clubs, selecting, onStartSelecting, onCancel, onChoose }: { club?: Club; clubs: Club[]; selecting: boolean; onStartSelecting: () => void; onCancel: () => void; onChoose: (id: string) => void }) {
+function FavouriteClubCard({
+  club,
+}: {
+  club: Profile["favouriteClub"];
+}) {
   return (
     <section className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm sm:p-7">
       <div className="flex items-center justify-between gap-4">
         <h2 className="text-xs font-black uppercase tracking-widest text-slate-500">Favourite Club</h2>
         {club && <Link href={`/clubs/${club.id}`} className="text-xs font-bold text-green-700 hover:text-green-800">View club →</Link>}
       </div>
-      {selecting ? (
-        <div className="mt-5 rounded-lg border border-green-200 bg-green-50 p-4">
-          <label htmlFor="favourite-club" className="block text-xs font-bold text-slate-700">Choose a club</label>
-          <select id="favourite-club" defaultValue={club?.id ?? ""} onChange={(event) => event.target.value && onChoose(event.target.value)} className="mt-2 h-11 w-full rounded-md border border-slate-300 bg-white px-3 text-sm outline-none focus:border-green-600 focus:ring-2 focus:ring-green-600/15">
-            <option value="">Select a club</option>
-            {clubs.map((option) => <option key={option.id} value={option.id}>{option.name} — {option.competition}</option>)}
-          </select>
-          <button type="button" onClick={onCancel} className="mt-3 text-xs font-bold text-slate-500 hover:text-slate-800">Cancel</button>
-        </div>
-      ) : club ? (
+      {club ? (
         <div className="mt-5 flex flex-col gap-5 sm:flex-row sm:items-center">
-          <div className="flex h-24 w-24 shrink-0 items-center justify-center rounded-xl bg-slate-50 p-4"><Image src={club.logo} alt={`${club.name} crest`} width={72} height={72} className="h-full w-full object-contain" /></div>
+          <div className="flex h-24 w-24 shrink-0 items-center justify-center rounded-xl bg-slate-50 p-4">
+            {club.crestUrl ? (
+              <Image src={club.crestUrl} alt={`${club.name} crest`} width={72} height={72} className="h-full w-full object-contain" />
+            ) : (
+              <span className="text-2xl font-black text-slate-400">
+                {club.name.charAt(0).toUpperCase()}
+              </span>
+            )}
+          </div>
           <div className="min-w-0 flex-1">
             <h3 className="text-xl font-black text-slate-950">{club.name}</h3>
-            <p className="mt-1 text-sm text-slate-500">{club.competition} · {club.country}</p>
-            <p className="mt-3 text-xs font-semibold text-green-700">{club.supporters} supporters</p>
+            <p className="mt-1 text-sm text-slate-500">Your favourite club</p>
           </div>
-          <button type="button" onClick={onStartSelecting} className="rounded-md border border-green-600 px-4 py-2.5 text-xs font-bold text-green-700 outline-none transition hover:bg-green-50 focus-visible:ring-2 focus-visible:ring-green-600 focus-visible:ring-offset-2">Change Favourite Club</button>
+          <Link href="/onboarding/club" className="rounded-md border border-green-600 px-4 py-2.5 text-center text-xs font-bold text-green-700 outline-none transition hover:bg-green-50 focus-visible:ring-2 focus-visible:ring-green-600 focus-visible:ring-offset-2">Change Favourite Club</Link>
         </div>
       ) : (
         <div className="mt-5 rounded-lg border border-dashed border-slate-300 px-5 py-9 text-center">
-          <p className="text-sm text-slate-500">Choose a club to personalize your supporter profile.</p>
-          <button type="button" onClick={onStartSelecting} className="mt-4 rounded-md bg-green-600 px-4 py-2.5 text-xs font-bold text-white outline-none transition hover:bg-green-700 focus-visible:ring-2 focus-visible:ring-green-600 focus-visible:ring-offset-2">Select Favourite Club</button>
+          <p className="text-sm text-slate-500">Not selected</p>
+          <Link href="/onboarding/club" className="mt-4 inline-block rounded-md bg-green-600 px-4 py-2.5 text-xs font-bold text-white outline-none transition hover:bg-green-700 focus-visible:ring-2 focus-visible:ring-green-600 focus-visible:ring-offset-2">Choose favourite club</Link>
         </div>
       )}
     </section>
   );
 }
 
-function AccountSummary({ profile, favouriteClub }: { profile: Profile; favouriteClub?: Club }) {
-  const items = [["Favourite club", favouriteClub?.name ?? "Not selected"], ["Account role", profile.role], ["Current tier", profile.tier], ["Member since", profile.memberSince]];
+function AccountSummary({ profile }: { profile: Profile }) {
+  const items = [["Favourite club", profile.favouriteClub?.name ?? "Not selected"], ["Account role", profile.role], ["Current tier", profile.tier], ["Loyalty points", String(profile.loyaltyPoints ?? 0)], ["Member since", profile.memberSince]];
   return (
     <section className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
       <h2 className="font-black text-slate-950">Phase 1 Account Summary</h2>

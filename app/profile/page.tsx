@@ -4,6 +4,7 @@ import { redirect } from "next/navigation";
 import Footer from "@/components/layout/Footer";
 import Navbar from "@/components/layout/Navbar";
 import ProfileDashboard from "@/components/profile/ProfileDashboard";
+import { prisma } from "@/lib/db";
 import { createClient } from "@/lib/supabase/server";
 import type { Profile } from "@/types/profile";
 
@@ -11,6 +12,39 @@ export const metadata: Metadata = {
   title: "Profile | UOM Football War Room",
   description: "Manage your supporter profile and favourite football club.",
 };
+
+function formatEnumLabel(value: string) {
+  return value
+    .toLowerCase()
+    .split("_")
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(" ");
+}
+
+function getSafeAvatarUrl(value: string | null) {
+  if (!value) return null;
+
+  try {
+    const url = new URL(value);
+    return url.protocol === "https:" ? url.toString() : null;
+  } catch {
+    return null;
+  }
+}
+
+function ProfileUnavailable() {
+  return (
+    <section className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm sm:p-8">
+      <h2 className="text-xl font-black text-slate-950">
+        Your supporter profile has not been created yet.
+      </h2>
+      <p className="mt-3 max-w-2xl text-sm leading-6 text-slate-600">
+        Please sign out and register again, or contact support if the problem
+        continues.
+      </p>
+    </section>
+  );
+}
 
 export default async function ProfilePage() {
   const supabase = await createClient();
@@ -23,37 +57,55 @@ export default async function ProfilePage() {
     redirect("/login?next=/profile");
   }
 
-  const email = user.email || "Email unavailable";
-  const emailPrefix =
-    user.email?.split("@")[0]?.trim() || "supporter";
-  const username =
-    typeof user.user_metadata.username === "string" &&
-    user.user_metadata.username.trim()
-      ? user.user_metadata.username.trim()
-      : emailPrefix;
-  const displayName =
-    typeof user.user_metadata.display_name === "string" &&
-    user.user_metadata.display_name.trim()
-      ? user.user_metadata.display_name.trim()
-      : username;
-  const createdAt = new Date(user.created_at);
-  const memberSince = Number.isNaN(createdAt.getTime())
-    ? "Unavailable"
-    : new Intl.DateTimeFormat("en", {
-        month: "long",
-        year: "numeric",
-      }).format(createdAt);
-  const profile: Profile = {
-    id: user.id,
-    displayName,
-    username,
-    email,
-    role: "Supporter",
-    tier: "New Fan",
-    memberSince,
-    accountStatus: "Active",
-    notificationsEnabled: false,
-  };
+  let databaseProfile;
+
+  try {
+    databaseProfile = await prisma.userProfile.findUnique({
+      where: {
+        id: user.id,
+      },
+      include: {
+        supportProfile: {
+          include: {
+            favouriteClub: true,
+          },
+        },
+      },
+    });
+  } catch {
+    databaseProfile = null;
+  }
+
+  const profile: Profile | null = databaseProfile
+    ? {
+        id: databaseProfile.id,
+        displayName:
+          databaseProfile.displayName ?? databaseProfile.username,
+        username: databaseProfile.username,
+        email: user.email ?? "Email unavailable",
+        role: formatEnumLabel(databaseProfile.role),
+        avatarUrl: getSafeAvatarUrl(databaseProfile.avatarUrl),
+        favouriteClub: databaseProfile.supportProfile?.favouriteClub
+          ? {
+              id: databaseProfile.supportProfile.favouriteClub.id,
+              name: databaseProfile.supportProfile.favouriteClub.name,
+              crestUrl:
+                databaseProfile.supportProfile.favouriteClub.crestUrl,
+            }
+          : null,
+        tier: formatEnumLabel(
+          databaseProfile.supportProfile?.tier ?? "NEW_FAN",
+        ),
+        loyaltyPoints:
+          databaseProfile.supportProfile?.loyaltyPoints ?? 0,
+        memberSince: new Intl.DateTimeFormat("en", {
+          month: "long",
+          year: "numeric",
+        }).format(databaseProfile.createdAt),
+        accountStatus: "Active",
+        notificationsEnabled: false,
+      }
+    : null;
 
   return (
     <>
@@ -65,7 +117,11 @@ export default async function ProfilePage() {
             <h1 className="mt-3 text-3xl font-black tracking-tight text-slate-950 sm:text-4xl">Your Profile</h1>
             <p className="mt-3 text-sm leading-6 text-slate-500">Manage your Phase 1 account details, choose your favourite club, and preview features planned for future phases.</p>
           </div>
-          <ProfileDashboard profile={profile} clubs={[]} />
+          {profile ? (
+            <ProfileDashboard profile={profile} />
+          ) : (
+            <ProfileUnavailable />
+          )}
         </section>
       </main>
       <Footer />

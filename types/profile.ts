@@ -3,10 +3,17 @@ export type Profile = {
   displayName: string;
   username: string;
   email: string;
-  role: "Supporter";
-  tier: "New Fan";
+  role: string;
+  tier: string;
+  loyaltyPoints?: number;
   memberSince: string;
   accountStatus: "Active" | "Inactive";
+  avatarUrl?: string | null;
+  favouriteClub?: {
+    id: string;
+    name: string;
+    crestUrl: string | null;
+  } | null;
   favouriteClubId?: string;
   notificationsEnabled: boolean;
 };
