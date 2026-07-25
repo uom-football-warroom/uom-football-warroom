@@ -3,6 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { type FormEvent, useState } from "react";
+import LogoutButton from "@/components/auth/LogoutButton";
 import PhasePreviewCard from "@/components/profile/PhasePreviewCard";
 import type { Club } from "@/types/football";
 import type { Profile } from "@/types/profile";
@@ -65,7 +66,7 @@ function ProfileHeader({ profile }: { profile: Profile }) {
             <span className="rounded-md bg-green-500/15 px-3 py-2 text-green-300">Tier: {profile.tier}</span>
           </div>
         </div>
-        <Link href="/login" className="rounded-md border border-white/20 px-4 py-2 text-xs font-bold outline-none transition hover:border-green-400 hover:text-green-400 focus-visible:ring-2 focus-visible:ring-green-400">Log out</Link>
+        <LogoutButton className="rounded-md border border-white/20 px-4 py-2 text-xs font-bold outline-none transition hover:border-green-400 hover:text-green-400 focus-visible:ring-2 focus-visible:ring-green-400 disabled:cursor-not-allowed disabled:opacity-60" />
       </div>
     </section>
   );
@@ -160,7 +161,7 @@ function AccountSettingsForm({ profile }: { profile: Profile }) {
         {success && <p role="status" className="rounded-md bg-green-50 px-3 py-2 text-sm text-green-700">{success}</p>}
         <div className="flex flex-col gap-3 sm:flex-row">
           <button type="submit" disabled={saving} className="flex-1 rounded-md bg-green-600 px-5 py-3 text-sm font-bold text-white outline-none transition hover:bg-green-700 focus-visible:ring-2 focus-visible:ring-green-600 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-60">{saving ? "Updating…" : "Save Changes"}</button>
-          <Link href="/login" className="rounded-md border border-slate-300 px-5 py-3 text-center text-sm font-bold text-slate-700 outline-none transition hover:border-red-300 hover:text-red-700 focus-visible:ring-2 focus-visible:ring-red-500 focus-visible:ring-offset-2">Log out</Link>
+          <LogoutButton className="rounded-md border border-slate-300 px-5 py-3 text-center text-sm font-bold text-slate-700 outline-none transition hover:border-red-300 hover:text-red-700 focus-visible:ring-2 focus-visible:ring-red-500 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-60" />
         </div>
       </form>
     </section>

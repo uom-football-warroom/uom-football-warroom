@@ -1,8 +1,10 @@
 import type { Metadata } from "next";
+import { redirect } from "next/navigation";
 
 import RegisterForm from "@/components/auth/RegisterForm";
 import Footer from "@/components/layout/Footer";
 import Navbar from "@/components/layout/Navbar";
+import { createClient } from "@/lib/supabase/server";
 
 export const metadata: Metadata = {
   title: "Create Account | UOM Football War Room",
@@ -10,7 +12,16 @@ export const metadata: Metadata = {
     "Create an account to follow your club and join the football community.",
 };
 
-export default function RegisterPage() {
+export default async function RegisterPage() {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (user) {
+    redirect("/profile");
+  }
+
   return (
     <>
       <Navbar />

@@ -1,10 +1,14 @@
 "use client";
 
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { FormEvent, useRef, useState } from "react";
+
+import { createClient } from "@/lib/supabase/client";
 
 type FieldName =
   | "username"
+  | "displayName"
   | "email"
   | "password"
   | "confirmPassword"
@@ -14,6 +18,7 @@ type FieldErrors = Partial<Record<FieldName, string>>;
 
 type FormValues = {
   username: string;
+  displayName: string;
   email: string;
   password: string;
   confirmPassword: string;
@@ -22,6 +27,7 @@ type FormValues = {
 
 const initialValues: FormValues = {
   username: "",
+  displayName: "",
   email: "",
   password: "",
   confirmPassword: "",
@@ -31,24 +37,22 @@ const initialValues: FormValues = {
 const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const fieldOrder: FieldName[] = [
   "username",
+  "displayName",
   "email",
   "password",
   "confirmPassword",
   "terms",
 ];
 
-async function submitRegistration(values: FormValues) {
-  // TODO: Add the registration API request here when the backend is ready.
-  void values;
-  await Promise.resolve();
-}
-
 export default function RegisterForm() {
+  const router = useRouter();
   const [values, setValues] = useState(initialValues);
   const [errors, setErrors] = useState<FieldErrors>({});
+  const [formError, setFormError] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const submissionInProgress = useRef(false);
   const fieldRefs = useRef<
     Partial<Record<FieldName, HTMLInputElement | null>>
   >({});
@@ -56,12 +60,17 @@ export default function RegisterForm() {
   function validateForm() {
     const nextErrors: FieldErrors = {};
     const username = values.username.trim();
+    const displayName = values.displayName.trim();
     const email = values.email.trim();
 
     if (!username) {
       nextErrors.username = "Username is required.";
     } else if (username.length < 3) {
       nextErrors.username = "Username must be at least 3 characters.";
+    }
+
+    if (!displayName) {
+      nextErrors.displayName = "Display name is required.";
     }
 
     if (!email) {
@@ -103,6 +112,8 @@ export default function RegisterForm() {
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
 
+    if (submissionInProgress.current) return;
+
     const nextErrors = validateForm();
     const firstInvalidField = fieldOrder.find((field) => nextErrors[field]);
 
@@ -111,15 +122,58 @@ export default function RegisterForm() {
       return;
     }
 
+    submissionInProgress.current = true;
     setIsSubmitting(true);
+    setFormError("");
 
     try {
-      await submitRegistration({
-        ...values,
-        username: values.username.trim(),
-        email: values.email.trim(),
+      const username = values.username.trim();
+      const displayName = values.displayName.trim();
+      const normalizedEmail = values.email.trim().toLowerCase();
+      const supabase = createClient();
+      const { data, error } = await supabase.auth.signUp({
+        email: normalizedEmail,
+        password: values.password,
+        options: {
+          data: {
+            username,
+            display_name: displayName || username,
+          },
+        },
       });
+
+      if (error) {
+        setFormError(
+          "Registration failed. Check your information and try again.",
+        );
+        return;
+      }
+
+      setValues(initialValues);
+      setErrors({});
+
+      if (data.session) {
+        router.replace("/profile");
+        router.refresh();
+        return;
+      }
+
+      try {
+        sessionStorage.setItem(
+          "pendingVerificationEmail",
+          normalizedEmail,
+        );
+      } catch {
+        // The verification page also supports entering the email manually.
+      }
+
+      router.replace("/verify-email");
+    } catch {
+      setFormError(
+        "Registration failed. Check your information and try again.",
+      );
     } finally {
+      submissionInProgress.current = false;
       setIsSubmitting(false);
     }
   }
@@ -157,6 +211,32 @@ export default function RegisterForm() {
             @
           </span>
         </div>
+      </FormField>
+
+      <FormField
+        label="Display Name"
+        error={errors.displayName}
+        errorId="display-name-error"
+      >
+        <input
+          ref={(element) => {
+            fieldRefs.current.displayName = element;
+          }}
+          id="display-name"
+          name="displayName"
+          type="text"
+          autoComplete="name"
+          value={values.displayName}
+          aria-describedby={
+            errors.displayName ? "display-name-error" : undefined
+          }
+          aria-invalid={Boolean(errors.displayName)}
+          onChange={(event) =>
+            updateValue("displayName", event.target.value)
+          }
+          className={`${inputClassName("displayName")} mt-2`}
+          placeholder="Alex Morgan"
+        />
       </FormField>
 
       <FormField label="Email Address" error={errors.email} errorId="email-error">
@@ -255,6 +335,15 @@ export default function RegisterForm() {
         )}
       </div>
 
+      {formError && (
+        <p
+          role="alert"
+          className="rounded-md border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700"
+        >
+          {formError}
+        </p>
+      )}
+
       <button
         type="submit"
         disabled={isSubmitting}
@@ -266,7 +355,7 @@ export default function RegisterForm() {
               aria-hidden="true"
               className="h-5 w-5 animate-spin rounded-full border-2 border-white/40 border-t-white"
             />
-            Creating Account...
+            Creating account...
           </>
         ) : (
           "Create Account"

@@ -1,7 +1,10 @@
 "use client";
 
 import Link from "next/link";
-import { FormEvent, useState } from "react";
+import { useRouter } from "next/navigation";
+import { FormEvent, useRef, useState } from "react";
+
+import { createClient } from "@/lib/supabase/client";
 
 type FieldErrors = {
   email?: string;
@@ -10,12 +13,27 @@ type FieldErrors = {
 
 const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-export default function LoginForm() {
+type LoginFormProps = {
+  confirmationError?: boolean;
+  nextPath?: string;
+};
+
+export default function LoginForm({
+  confirmationError = false,
+  nextPath = "/profile",
+}: LoginFormProps) {
+  const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [errors, setErrors] = useState<FieldErrors>({});
+  const [formError, setFormError] = useState(
+    confirmationError
+      ? "We could not confirm your email. Request a new verification email or try again."
+      : "",
+  );
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const submissionInProgress = useRef(false);
 
   function validateForm() {
     const nextErrors: FieldErrors = {};
@@ -37,14 +55,31 @@ export default function LoginForm() {
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
 
+    if (submissionInProgress.current) return;
     if (!validateForm()) return;
 
+    submissionInProgress.current = true;
     setIsSubmitting(true);
+    setFormError("");
 
     try {
-      // TODO: Connect the authentication request here when the backend is ready.
-      await Promise.resolve();
+      const supabase = createClient();
+      const { error } = await supabase.auth.signInWithPassword({
+        email: email.trim().toLowerCase(),
+        password,
+      });
+
+      if (error) {
+        setFormError("Invalid email or password.");
+        return;
+      }
+
+      router.replace(nextPath);
+      router.refresh();
+    } catch {
+      setFormError("Invalid email or password.");
     } finally {
+      submissionInProgress.current = false;
       setIsSubmitting(false);
     }
   }
@@ -155,6 +190,15 @@ export default function LoginForm() {
         Remember me
       </label>
 
+      {formError && (
+        <p
+          role="alert"
+          className="rounded-md border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700"
+        >
+          {formError}
+        </p>
+      )}
+
       <button
         type="submit"
         disabled={isSubmitting}
@@ -166,7 +210,7 @@ export default function LoginForm() {
               aria-hidden="true"
               className="h-5 w-5 animate-spin rounded-full border-2 border-white/40 border-t-white"
             />
-            Signing In...
+            Signing in...
           </>
         ) : (
           <>
