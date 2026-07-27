@@ -37,7 +37,6 @@ export type SupportProfileSumAggregateOutputType = {
 export type SupportProfileMinAggregateOutputType = {
   id: string | null
   userId: string | null
-  favouriteClubId: string | null
   tier: $Enums.LoyaltyTier | null
   loyaltyPoints: number | null
   createdAt: Date | null
@@ -47,7 +46,6 @@ export type SupportProfileMinAggregateOutputType = {
 export type SupportProfileMaxAggregateOutputType = {
   id: string | null
   userId: string | null
-  favouriteClubId: string | null
   tier: $Enums.LoyaltyTier | null
   loyaltyPoints: number | null
   createdAt: Date | null
@@ -57,7 +55,6 @@ export type SupportProfileMaxAggregateOutputType = {
 export type SupportProfileCountAggregateOutputType = {
   id: number
   userId: number
-  favouriteClubId: number
   tier: number
   loyaltyPoints: number
   createdAt: number
@@ -77,7 +74,6 @@ export type SupportProfileSumAggregateInputType = {
 export type SupportProfileMinAggregateInputType = {
   id?: true
   userId?: true
-  favouriteClubId?: true
   tier?: true
   loyaltyPoints?: true
   createdAt?: true
@@ -87,7 +83,6 @@ export type SupportProfileMinAggregateInputType = {
 export type SupportProfileMaxAggregateInputType = {
   id?: true
   userId?: true
-  favouriteClubId?: true
   tier?: true
   loyaltyPoints?: true
   createdAt?: true
@@ -97,7 +92,6 @@ export type SupportProfileMaxAggregateInputType = {
 export type SupportProfileCountAggregateInputType = {
   id?: true
   userId?: true
-  favouriteClubId?: true
   tier?: true
   loyaltyPoints?: true
   createdAt?: true
@@ -194,7 +188,6 @@ export type SupportProfileGroupByArgs<ExtArgs extends runtime.Types.Extensions.I
 export type SupportProfileGroupByOutputType = {
   id: string
   userId: string
-  favouriteClubId: string | null
   tier: $Enums.LoyaltyTier
   loyaltyPoints: number
   createdAt: Date
@@ -227,25 +220,23 @@ export type SupportProfileWhereInput = {
   NOT?: Prisma.SupportProfileWhereInput | Prisma.SupportProfileWhereInput[]
   id?: Prisma.UuidFilter<"SupportProfile"> | string
   userId?: Prisma.UuidFilter<"SupportProfile"> | string
-  favouriteClubId?: Prisma.UuidNullableFilter<"SupportProfile"> | string | null
   tier?: Prisma.EnumLoyaltyTierFilter<"SupportProfile"> | $Enums.LoyaltyTier
   loyaltyPoints?: Prisma.IntFilter<"SupportProfile"> | number
   createdAt?: Prisma.DateTimeFilter<"SupportProfile"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"SupportProfile"> | Date | string
   user?: Prisma.XOR<Prisma.UserProfileScalarRelationFilter, Prisma.UserProfileWhereInput>
-  favouriteClub?: Prisma.XOR<Prisma.ClubNullableScalarRelationFilter, Prisma.ClubWhereInput> | null
+  favouriteClubs?: Prisma.SupportProfileClubListRelationFilter
 }
 
 export type SupportProfileOrderByWithRelationInput = {
   id?: Prisma.SortOrder
   userId?: Prisma.SortOrder
-  favouriteClubId?: Prisma.SortOrderInput | Prisma.SortOrder
   tier?: Prisma.SortOrder
   loyaltyPoints?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   user?: Prisma.UserProfileOrderByWithRelationInput
-  favouriteClub?: Prisma.ClubOrderByWithRelationInput
+  favouriteClubs?: Prisma.SupportProfileClubOrderByRelationAggregateInput
 }
 
 export type SupportProfileWhereUniqueInput = Prisma.AtLeast<{
@@ -254,19 +245,17 @@ export type SupportProfileWhereUniqueInput = Prisma.AtLeast<{
   AND?: Prisma.SupportProfileWhereInput | Prisma.SupportProfileWhereInput[]
   OR?: Prisma.SupportProfileWhereInput[]
   NOT?: Prisma.SupportProfileWhereInput | Prisma.SupportProfileWhereInput[]
-  favouriteClubId?: Prisma.UuidNullableFilter<"SupportProfile"> | string | null
   tier?: Prisma.EnumLoyaltyTierFilter<"SupportProfile"> | $Enums.LoyaltyTier
   loyaltyPoints?: Prisma.IntFilter<"SupportProfile"> | number
   createdAt?: Prisma.DateTimeFilter<"SupportProfile"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"SupportProfile"> | Date | string
   user?: Prisma.XOR<Prisma.UserProfileScalarRelationFilter, Prisma.UserProfileWhereInput>
-  favouriteClub?: Prisma.XOR<Prisma.ClubNullableScalarRelationFilter, Prisma.ClubWhereInput> | null
+  favouriteClubs?: Prisma.SupportProfileClubListRelationFilter
 }, "id" | "userId">
 
 export type SupportProfileOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
   userId?: Prisma.SortOrder
-  favouriteClubId?: Prisma.SortOrderInput | Prisma.SortOrder
   tier?: Prisma.SortOrder
   loyaltyPoints?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
@@ -284,7 +273,6 @@ export type SupportProfileScalarWhereWithAggregatesInput = {
   NOT?: Prisma.SupportProfileScalarWhereWithAggregatesInput | Prisma.SupportProfileScalarWhereWithAggregatesInput[]
   id?: Prisma.UuidWithAggregatesFilter<"SupportProfile"> | string
   userId?: Prisma.UuidWithAggregatesFilter<"SupportProfile"> | string
-  favouriteClubId?: Prisma.UuidNullableWithAggregatesFilter<"SupportProfile"> | string | null
   tier?: Prisma.EnumLoyaltyTierWithAggregatesFilter<"SupportProfile"> | $Enums.LoyaltyTier
   loyaltyPoints?: Prisma.IntWithAggregatesFilter<"SupportProfile"> | number
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"SupportProfile"> | Date | string
@@ -298,17 +286,17 @@ export type SupportProfileCreateInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   user: Prisma.UserProfileCreateNestedOneWithoutSupportProfileInput
-  favouriteClub?: Prisma.ClubCreateNestedOneWithoutSupportersInput
+  favouriteClubs?: Prisma.SupportProfileClubCreateNestedManyWithoutSupportProfileInput
 }
 
 export type SupportProfileUncheckedCreateInput = {
   id?: string
   userId: string
-  favouriteClubId?: string | null
   tier?: $Enums.LoyaltyTier
   loyaltyPoints?: number
   createdAt?: Date | string
   updatedAt?: Date | string
+  favouriteClubs?: Prisma.SupportProfileClubUncheckedCreateNestedManyWithoutSupportProfileInput
 }
 
 export type SupportProfileUpdateInput = {
@@ -318,23 +306,22 @@ export type SupportProfileUpdateInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   user?: Prisma.UserProfileUpdateOneRequiredWithoutSupportProfileNestedInput
-  favouriteClub?: Prisma.ClubUpdateOneWithoutSupportersNestedInput
+  favouriteClubs?: Prisma.SupportProfileClubUpdateManyWithoutSupportProfileNestedInput
 }
 
 export type SupportProfileUncheckedUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   userId?: Prisma.StringFieldUpdateOperationsInput | string
-  favouriteClubId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   tier?: Prisma.EnumLoyaltyTierFieldUpdateOperationsInput | $Enums.LoyaltyTier
   loyaltyPoints?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  favouriteClubs?: Prisma.SupportProfileClubUncheckedUpdateManyWithoutSupportProfileNestedInput
 }
 
 export type SupportProfileCreateManyInput = {
   id?: string
   userId: string
-  favouriteClubId?: string | null
   tier?: $Enums.LoyaltyTier
   loyaltyPoints?: number
   createdAt?: Date | string
@@ -352,7 +339,6 @@ export type SupportProfileUpdateManyMutationInput = {
 export type SupportProfileUncheckedUpdateManyInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   userId?: Prisma.StringFieldUpdateOperationsInput | string
-  favouriteClubId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   tier?: Prisma.EnumLoyaltyTierFieldUpdateOperationsInput | $Enums.LoyaltyTier
   loyaltyPoints?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -367,7 +353,6 @@ export type SupportProfileNullableScalarRelationFilter = {
 export type SupportProfileCountOrderByAggregateInput = {
   id?: Prisma.SortOrder
   userId?: Prisma.SortOrder
-  favouriteClubId?: Prisma.SortOrder
   tier?: Prisma.SortOrder
   loyaltyPoints?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
@@ -381,7 +366,6 @@ export type SupportProfileAvgOrderByAggregateInput = {
 export type SupportProfileMaxOrderByAggregateInput = {
   id?: Prisma.SortOrder
   userId?: Prisma.SortOrder
-  favouriteClubId?: Prisma.SortOrder
   tier?: Prisma.SortOrder
   loyaltyPoints?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
@@ -391,7 +375,6 @@ export type SupportProfileMaxOrderByAggregateInput = {
 export type SupportProfileMinOrderByAggregateInput = {
   id?: Prisma.SortOrder
   userId?: Prisma.SortOrder
-  favouriteClubId?: Prisma.SortOrder
   tier?: Prisma.SortOrder
   loyaltyPoints?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
@@ -402,14 +385,9 @@ export type SupportProfileSumOrderByAggregateInput = {
   loyaltyPoints?: Prisma.SortOrder
 }
 
-export type SupportProfileListRelationFilter = {
-  every?: Prisma.SupportProfileWhereInput
-  some?: Prisma.SupportProfileWhereInput
-  none?: Prisma.SupportProfileWhereInput
-}
-
-export type SupportProfileOrderByRelationAggregateInput = {
-  _count?: Prisma.SortOrder
+export type SupportProfileScalarRelationFilter = {
+  is?: Prisma.SupportProfileWhereInput
+  isNot?: Prisma.SupportProfileWhereInput
 }
 
 export type SupportProfileCreateNestedOneWithoutUserInput = {
@@ -456,46 +434,18 @@ export type IntFieldUpdateOperationsInput = {
   divide?: number
 }
 
-export type SupportProfileCreateNestedManyWithoutFavouriteClubInput = {
-  create?: Prisma.XOR<Prisma.SupportProfileCreateWithoutFavouriteClubInput, Prisma.SupportProfileUncheckedCreateWithoutFavouriteClubInput> | Prisma.SupportProfileCreateWithoutFavouriteClubInput[] | Prisma.SupportProfileUncheckedCreateWithoutFavouriteClubInput[]
-  connectOrCreate?: Prisma.SupportProfileCreateOrConnectWithoutFavouriteClubInput | Prisma.SupportProfileCreateOrConnectWithoutFavouriteClubInput[]
-  createMany?: Prisma.SupportProfileCreateManyFavouriteClubInputEnvelope
-  connect?: Prisma.SupportProfileWhereUniqueInput | Prisma.SupportProfileWhereUniqueInput[]
+export type SupportProfileCreateNestedOneWithoutFavouriteClubsInput = {
+  create?: Prisma.XOR<Prisma.SupportProfileCreateWithoutFavouriteClubsInput, Prisma.SupportProfileUncheckedCreateWithoutFavouriteClubsInput>
+  connectOrCreate?: Prisma.SupportProfileCreateOrConnectWithoutFavouriteClubsInput
+  connect?: Prisma.SupportProfileWhereUniqueInput
 }
 
-export type SupportProfileUncheckedCreateNestedManyWithoutFavouriteClubInput = {
-  create?: Prisma.XOR<Prisma.SupportProfileCreateWithoutFavouriteClubInput, Prisma.SupportProfileUncheckedCreateWithoutFavouriteClubInput> | Prisma.SupportProfileCreateWithoutFavouriteClubInput[] | Prisma.SupportProfileUncheckedCreateWithoutFavouriteClubInput[]
-  connectOrCreate?: Prisma.SupportProfileCreateOrConnectWithoutFavouriteClubInput | Prisma.SupportProfileCreateOrConnectWithoutFavouriteClubInput[]
-  createMany?: Prisma.SupportProfileCreateManyFavouriteClubInputEnvelope
-  connect?: Prisma.SupportProfileWhereUniqueInput | Prisma.SupportProfileWhereUniqueInput[]
-}
-
-export type SupportProfileUpdateManyWithoutFavouriteClubNestedInput = {
-  create?: Prisma.XOR<Prisma.SupportProfileCreateWithoutFavouriteClubInput, Prisma.SupportProfileUncheckedCreateWithoutFavouriteClubInput> | Prisma.SupportProfileCreateWithoutFavouriteClubInput[] | Prisma.SupportProfileUncheckedCreateWithoutFavouriteClubInput[]
-  connectOrCreate?: Prisma.SupportProfileCreateOrConnectWithoutFavouriteClubInput | Prisma.SupportProfileCreateOrConnectWithoutFavouriteClubInput[]
-  upsert?: Prisma.SupportProfileUpsertWithWhereUniqueWithoutFavouriteClubInput | Prisma.SupportProfileUpsertWithWhereUniqueWithoutFavouriteClubInput[]
-  createMany?: Prisma.SupportProfileCreateManyFavouriteClubInputEnvelope
-  set?: Prisma.SupportProfileWhereUniqueInput | Prisma.SupportProfileWhereUniqueInput[]
-  disconnect?: Prisma.SupportProfileWhereUniqueInput | Prisma.SupportProfileWhereUniqueInput[]
-  delete?: Prisma.SupportProfileWhereUniqueInput | Prisma.SupportProfileWhereUniqueInput[]
-  connect?: Prisma.SupportProfileWhereUniqueInput | Prisma.SupportProfileWhereUniqueInput[]
-  update?: Prisma.SupportProfileUpdateWithWhereUniqueWithoutFavouriteClubInput | Prisma.SupportProfileUpdateWithWhereUniqueWithoutFavouriteClubInput[]
-  updateMany?: Prisma.SupportProfileUpdateManyWithWhereWithoutFavouriteClubInput | Prisma.SupportProfileUpdateManyWithWhereWithoutFavouriteClubInput[]
-  deleteMany?: Prisma.SupportProfileScalarWhereInput | Prisma.SupportProfileScalarWhereInput[]
-}
-
-export type SupportProfileUncheckedUpdateManyWithoutFavouriteClubNestedInput = {
-  create?: Prisma.XOR<Prisma.SupportProfileCreateWithoutFavouriteClubInput, Prisma.SupportProfileUncheckedCreateWithoutFavouriteClubInput> | Prisma.SupportProfileCreateWithoutFavouriteClubInput[] | Prisma.SupportProfileUncheckedCreateWithoutFavouriteClubInput[]
-  connectOrCreate?: Prisma.SupportProfileCreateOrConnectWithoutFavouriteClubInput | Prisma.SupportProfileCreateOrConnectWithoutFavouriteClubInput[]
-  upsert?: Prisma.SupportProfileUpsertWithWhereUniqueWithoutFavouriteClubInput | Prisma.SupportProfileUpsertWithWhereUniqueWithoutFavouriteClubInput[]
-  createMany?: Prisma.SupportProfileCreateManyFavouriteClubInputEnvelope
-  set?: Prisma.SupportProfileWhereUniqueInput | Prisma.SupportProfileWhereUniqueInput[]
-  disconnect?: Prisma.SupportProfileWhereUniqueInput | Prisma.SupportProfileWhereUniqueInput[]
-  delete?: Prisma.SupportProfileWhereUniqueInput | Prisma.SupportProfileWhereUniqueInput[]
-  connect?: Prisma.SupportProfileWhereUniqueInput | Prisma.SupportProfileWhereUniqueInput[]
-  update?: Prisma.SupportProfileUpdateWithWhereUniqueWithoutFavouriteClubInput | Prisma.SupportProfileUpdateWithWhereUniqueWithoutFavouriteClubInput[]
-  updateMany?: Prisma.SupportProfileUpdateManyWithWhereWithoutFavouriteClubInput | Prisma.SupportProfileUpdateManyWithWhereWithoutFavouriteClubInput[]
-  deleteMany?: Prisma.SupportProfileScalarWhereInput | Prisma.SupportProfileScalarWhereInput[]
+export type SupportProfileUpdateOneRequiredWithoutFavouriteClubsNestedInput = {
+  create?: Prisma.XOR<Prisma.SupportProfileCreateWithoutFavouriteClubsInput, Prisma.SupportProfileUncheckedCreateWithoutFavouriteClubsInput>
+  connectOrCreate?: Prisma.SupportProfileCreateOrConnectWithoutFavouriteClubsInput
+  upsert?: Prisma.SupportProfileUpsertWithoutFavouriteClubsInput
+  connect?: Prisma.SupportProfileWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.SupportProfileUpdateToOneWithWhereWithoutFavouriteClubsInput, Prisma.SupportProfileUpdateWithoutFavouriteClubsInput>, Prisma.SupportProfileUncheckedUpdateWithoutFavouriteClubsInput>
 }
 
 export type SupportProfileCreateWithoutUserInput = {
@@ -504,16 +454,16 @@ export type SupportProfileCreateWithoutUserInput = {
   loyaltyPoints?: number
   createdAt?: Date | string
   updatedAt?: Date | string
-  favouriteClub?: Prisma.ClubCreateNestedOneWithoutSupportersInput
+  favouriteClubs?: Prisma.SupportProfileClubCreateNestedManyWithoutSupportProfileInput
 }
 
 export type SupportProfileUncheckedCreateWithoutUserInput = {
   id?: string
-  favouriteClubId?: string | null
   tier?: $Enums.LoyaltyTier
   loyaltyPoints?: number
   createdAt?: Date | string
   updatedAt?: Date | string
+  favouriteClubs?: Prisma.SupportProfileClubUncheckedCreateNestedManyWithoutSupportProfileInput
 }
 
 export type SupportProfileCreateOrConnectWithoutUserInput = {
@@ -538,19 +488,19 @@ export type SupportProfileUpdateWithoutUserInput = {
   loyaltyPoints?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  favouriteClub?: Prisma.ClubUpdateOneWithoutSupportersNestedInput
+  favouriteClubs?: Prisma.SupportProfileClubUpdateManyWithoutSupportProfileNestedInput
 }
 
 export type SupportProfileUncheckedUpdateWithoutUserInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  favouriteClubId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   tier?: Prisma.EnumLoyaltyTierFieldUpdateOperationsInput | $Enums.LoyaltyTier
   loyaltyPoints?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  favouriteClubs?: Prisma.SupportProfileClubUncheckedUpdateManyWithoutSupportProfileNestedInput
 }
 
-export type SupportProfileCreateWithoutFavouriteClubInput = {
+export type SupportProfileCreateWithoutFavouriteClubsInput = {
   id?: string
   tier?: $Enums.LoyaltyTier
   loyaltyPoints?: number
@@ -559,7 +509,7 @@ export type SupportProfileCreateWithoutFavouriteClubInput = {
   user: Prisma.UserProfileCreateNestedOneWithoutSupportProfileInput
 }
 
-export type SupportProfileUncheckedCreateWithoutFavouriteClubInput = {
+export type SupportProfileUncheckedCreateWithoutFavouriteClubsInput = {
   id?: string
   userId: string
   tier?: $Enums.LoyaltyTier
@@ -568,55 +518,23 @@ export type SupportProfileUncheckedCreateWithoutFavouriteClubInput = {
   updatedAt?: Date | string
 }
 
-export type SupportProfileCreateOrConnectWithoutFavouriteClubInput = {
+export type SupportProfileCreateOrConnectWithoutFavouriteClubsInput = {
   where: Prisma.SupportProfileWhereUniqueInput
-  create: Prisma.XOR<Prisma.SupportProfileCreateWithoutFavouriteClubInput, Prisma.SupportProfileUncheckedCreateWithoutFavouriteClubInput>
+  create: Prisma.XOR<Prisma.SupportProfileCreateWithoutFavouriteClubsInput, Prisma.SupportProfileUncheckedCreateWithoutFavouriteClubsInput>
 }
 
-export type SupportProfileCreateManyFavouriteClubInputEnvelope = {
-  data: Prisma.SupportProfileCreateManyFavouriteClubInput | Prisma.SupportProfileCreateManyFavouriteClubInput[]
-  skipDuplicates?: boolean
+export type SupportProfileUpsertWithoutFavouriteClubsInput = {
+  update: Prisma.XOR<Prisma.SupportProfileUpdateWithoutFavouriteClubsInput, Prisma.SupportProfileUncheckedUpdateWithoutFavouriteClubsInput>
+  create: Prisma.XOR<Prisma.SupportProfileCreateWithoutFavouriteClubsInput, Prisma.SupportProfileUncheckedCreateWithoutFavouriteClubsInput>
+  where?: Prisma.SupportProfileWhereInput
 }
 
-export type SupportProfileUpsertWithWhereUniqueWithoutFavouriteClubInput = {
-  where: Prisma.SupportProfileWhereUniqueInput
-  update: Prisma.XOR<Prisma.SupportProfileUpdateWithoutFavouriteClubInput, Prisma.SupportProfileUncheckedUpdateWithoutFavouriteClubInput>
-  create: Prisma.XOR<Prisma.SupportProfileCreateWithoutFavouriteClubInput, Prisma.SupportProfileUncheckedCreateWithoutFavouriteClubInput>
+export type SupportProfileUpdateToOneWithWhereWithoutFavouriteClubsInput = {
+  where?: Prisma.SupportProfileWhereInput
+  data: Prisma.XOR<Prisma.SupportProfileUpdateWithoutFavouriteClubsInput, Prisma.SupportProfileUncheckedUpdateWithoutFavouriteClubsInput>
 }
 
-export type SupportProfileUpdateWithWhereUniqueWithoutFavouriteClubInput = {
-  where: Prisma.SupportProfileWhereUniqueInput
-  data: Prisma.XOR<Prisma.SupportProfileUpdateWithoutFavouriteClubInput, Prisma.SupportProfileUncheckedUpdateWithoutFavouriteClubInput>
-}
-
-export type SupportProfileUpdateManyWithWhereWithoutFavouriteClubInput = {
-  where: Prisma.SupportProfileScalarWhereInput
-  data: Prisma.XOR<Prisma.SupportProfileUpdateManyMutationInput, Prisma.SupportProfileUncheckedUpdateManyWithoutFavouriteClubInput>
-}
-
-export type SupportProfileScalarWhereInput = {
-  AND?: Prisma.SupportProfileScalarWhereInput | Prisma.SupportProfileScalarWhereInput[]
-  OR?: Prisma.SupportProfileScalarWhereInput[]
-  NOT?: Prisma.SupportProfileScalarWhereInput | Prisma.SupportProfileScalarWhereInput[]
-  id?: Prisma.UuidFilter<"SupportProfile"> | string
-  userId?: Prisma.UuidFilter<"SupportProfile"> | string
-  favouriteClubId?: Prisma.UuidNullableFilter<"SupportProfile"> | string | null
-  tier?: Prisma.EnumLoyaltyTierFilter<"SupportProfile"> | $Enums.LoyaltyTier
-  loyaltyPoints?: Prisma.IntFilter<"SupportProfile"> | number
-  createdAt?: Prisma.DateTimeFilter<"SupportProfile"> | Date | string
-  updatedAt?: Prisma.DateTimeFilter<"SupportProfile"> | Date | string
-}
-
-export type SupportProfileCreateManyFavouriteClubInput = {
-  id?: string
-  userId: string
-  tier?: $Enums.LoyaltyTier
-  loyaltyPoints?: number
-  createdAt?: Date | string
-  updatedAt?: Date | string
-}
-
-export type SupportProfileUpdateWithoutFavouriteClubInput = {
+export type SupportProfileUpdateWithoutFavouriteClubsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   tier?: Prisma.EnumLoyaltyTierFieldUpdateOperationsInput | $Enums.LoyaltyTier
   loyaltyPoints?: Prisma.IntFieldUpdateOperationsInput | number
@@ -625,7 +543,7 @@ export type SupportProfileUpdateWithoutFavouriteClubInput = {
   user?: Prisma.UserProfileUpdateOneRequiredWithoutSupportProfileNestedInput
 }
 
-export type SupportProfileUncheckedUpdateWithoutFavouriteClubInput = {
+export type SupportProfileUncheckedUpdateWithoutFavouriteClubsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   userId?: Prisma.StringFieldUpdateOperationsInput | string
   tier?: Prisma.EnumLoyaltyTierFieldUpdateOperationsInput | $Enums.LoyaltyTier
@@ -634,87 +552,100 @@ export type SupportProfileUncheckedUpdateWithoutFavouriteClubInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
-export type SupportProfileUncheckedUpdateManyWithoutFavouriteClubInput = {
-  id?: Prisma.StringFieldUpdateOperationsInput | string
-  userId?: Prisma.StringFieldUpdateOperationsInput | string
-  tier?: Prisma.EnumLoyaltyTierFieldUpdateOperationsInput | $Enums.LoyaltyTier
-  loyaltyPoints?: Prisma.IntFieldUpdateOperationsInput | number
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+
+/**
+ * Count Type SupportProfileCountOutputType
+ */
+
+export type SupportProfileCountOutputType = {
+  favouriteClubs: number
 }
 
+export type SupportProfileCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  favouriteClubs?: boolean | SupportProfileCountOutputTypeCountFavouriteClubsArgs
+}
+
+/**
+ * SupportProfileCountOutputType without action
+ */
+export type SupportProfileCountOutputTypeDefaultArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the SupportProfileCountOutputType
+   */
+  select?: Prisma.SupportProfileCountOutputTypeSelect<ExtArgs> | null
+}
+
+/**
+ * SupportProfileCountOutputType without action
+ */
+export type SupportProfileCountOutputTypeCountFavouriteClubsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.SupportProfileClubWhereInput
+}
 
 
 export type SupportProfileSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
   userId?: boolean
-  favouriteClubId?: boolean
   tier?: boolean
   loyaltyPoints?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   user?: boolean | Prisma.UserProfileDefaultArgs<ExtArgs>
-  favouriteClub?: boolean | Prisma.SupportProfile$favouriteClubArgs<ExtArgs>
+  favouriteClubs?: boolean | Prisma.SupportProfile$favouriteClubsArgs<ExtArgs>
+  _count?: boolean | Prisma.SupportProfileCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["supportProfile"]>
 
 export type SupportProfileSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
   userId?: boolean
-  favouriteClubId?: boolean
   tier?: boolean
   loyaltyPoints?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   user?: boolean | Prisma.UserProfileDefaultArgs<ExtArgs>
-  favouriteClub?: boolean | Prisma.SupportProfile$favouriteClubArgs<ExtArgs>
 }, ExtArgs["result"]["supportProfile"]>
 
 export type SupportProfileSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
   userId?: boolean
-  favouriteClubId?: boolean
   tier?: boolean
   loyaltyPoints?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   user?: boolean | Prisma.UserProfileDefaultArgs<ExtArgs>
-  favouriteClub?: boolean | Prisma.SupportProfile$favouriteClubArgs<ExtArgs>
 }, ExtArgs["result"]["supportProfile"]>
 
 export type SupportProfileSelectScalar = {
   id?: boolean
   userId?: boolean
-  favouriteClubId?: boolean
   tier?: boolean
   loyaltyPoints?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }
 
-export type SupportProfileOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "userId" | "favouriteClubId" | "tier" | "loyaltyPoints" | "createdAt" | "updatedAt", ExtArgs["result"]["supportProfile"]>
+export type SupportProfileOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "userId" | "tier" | "loyaltyPoints" | "createdAt" | "updatedAt", ExtArgs["result"]["supportProfile"]>
 export type SupportProfileInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   user?: boolean | Prisma.UserProfileDefaultArgs<ExtArgs>
-  favouriteClub?: boolean | Prisma.SupportProfile$favouriteClubArgs<ExtArgs>
+  favouriteClubs?: boolean | Prisma.SupportProfile$favouriteClubsArgs<ExtArgs>
+  _count?: boolean | Prisma.SupportProfileCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type SupportProfileIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   user?: boolean | Prisma.UserProfileDefaultArgs<ExtArgs>
-  favouriteClub?: boolean | Prisma.SupportProfile$favouriteClubArgs<ExtArgs>
 }
 export type SupportProfileIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   user?: boolean | Prisma.UserProfileDefaultArgs<ExtArgs>
-  favouriteClub?: boolean | Prisma.SupportProfile$favouriteClubArgs<ExtArgs>
 }
 
 export type $SupportProfilePayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "SupportProfile"
   objects: {
     user: Prisma.$UserProfilePayload<ExtArgs>
-    favouriteClub: Prisma.$ClubPayload<ExtArgs> | null
+    favouriteClubs: Prisma.$SupportProfileClubPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
     userId: string
-    favouriteClubId: string | null
     tier: $Enums.LoyaltyTier
     loyaltyPoints: number
     createdAt: Date
@@ -1114,7 +1045,7 @@ readonly fields: SupportProfileFieldRefs;
 export interface Prisma__SupportProfileClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
   user<T extends Prisma.UserProfileDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.UserProfileDefaultArgs<ExtArgs>>): Prisma.Prisma__UserProfileClient<runtime.Types.Result.GetResult<Prisma.$UserProfilePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
-  favouriteClub<T extends Prisma.SupportProfile$favouriteClubArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.SupportProfile$favouriteClubArgs<ExtArgs>>): Prisma.Prisma__ClubClient<runtime.Types.Result.GetResult<Prisma.$ClubPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+  favouriteClubs<T extends Prisma.SupportProfile$favouriteClubsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.SupportProfile$favouriteClubsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$SupportProfileClubPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1146,7 +1077,6 @@ export interface Prisma__SupportProfileClient<T, Null = never, ExtArgs extends r
 export interface SupportProfileFieldRefs {
   readonly id: Prisma.FieldRef<"SupportProfile", 'String'>
   readonly userId: Prisma.FieldRef<"SupportProfile", 'String'>
-  readonly favouriteClubId: Prisma.FieldRef<"SupportProfile", 'String'>
   readonly tier: Prisma.FieldRef<"SupportProfile", 'LoyaltyTier'>
   readonly loyaltyPoints: Prisma.FieldRef<"SupportProfile", 'Int'>
   readonly createdAt: Prisma.FieldRef<"SupportProfile", 'DateTime'>
@@ -1552,22 +1482,27 @@ export type SupportProfileDeleteManyArgs<ExtArgs extends runtime.Types.Extension
 }
 
 /**
- * SupportProfile.favouriteClub
+ * SupportProfile.favouriteClubs
  */
-export type SupportProfile$favouriteClubArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+export type SupportProfile$favouriteClubsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   /**
-   * Select specific fields to fetch from the Club
+   * Select specific fields to fetch from the SupportProfileClub
    */
-  select?: Prisma.ClubSelect<ExtArgs> | null
+  select?: Prisma.SupportProfileClubSelect<ExtArgs> | null
   /**
-   * Omit specific fields from the Club
+   * Omit specific fields from the SupportProfileClub
    */
-  omit?: Prisma.ClubOmit<ExtArgs> | null
+  omit?: Prisma.SupportProfileClubOmit<ExtArgs> | null
   /**
    * Choose, which related nodes to fetch as well
    */
-  include?: Prisma.ClubInclude<ExtArgs> | null
-  where?: Prisma.ClubWhereInput
+  include?: Prisma.SupportProfileClubInclude<ExtArgs> | null
+  where?: Prisma.SupportProfileClubWhereInput
+  orderBy?: Prisma.SupportProfileClubOrderByWithRelationInput | Prisma.SupportProfileClubOrderByWithRelationInput[]
+  cursor?: Prisma.SupportProfileClubWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.SupportProfileClubScalarFieldEnum | Prisma.SupportProfileClubScalarFieldEnum[]
 }
 
 /**

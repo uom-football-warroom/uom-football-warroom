@@ -312,7 +312,7 @@ export type ClubWhereInput = {
   websiteUrl?: Prisma.StringNullableFilter<"Club"> | string | null
   createdAt?: Prisma.DateTimeFilter<"Club"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Club"> | Date | string
-  supporters?: Prisma.SupportProfileListRelationFilter
+  supportProfiles?: Prisma.SupportProfileClubListRelationFilter
   homeFixtures?: Prisma.FixtureListRelationFilter
   awayFixtures?: Prisma.FixtureListRelationFilter
 }
@@ -334,7 +334,7 @@ export type ClubOrderByWithRelationInput = {
   websiteUrl?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
-  supporters?: Prisma.SupportProfileOrderByRelationAggregateInput
+  supportProfiles?: Prisma.SupportProfileClubOrderByRelationAggregateInput
   homeFixtures?: Prisma.FixtureOrderByRelationAggregateInput
   awayFixtures?: Prisma.FixtureOrderByRelationAggregateInput
 }
@@ -359,7 +359,7 @@ export type ClubWhereUniqueInput = Prisma.AtLeast<{
   websiteUrl?: Prisma.StringNullableFilter<"Club"> | string | null
   createdAt?: Prisma.DateTimeFilter<"Club"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Club"> | Date | string
-  supporters?: Prisma.SupportProfileListRelationFilter
+  supportProfiles?: Prisma.SupportProfileClubListRelationFilter
   homeFixtures?: Prisma.FixtureListRelationFilter
   awayFixtures?: Prisma.FixtureListRelationFilter
 }, "id" | "externalId" | "slug">
@@ -427,7 +427,7 @@ export type ClubCreateInput = {
   websiteUrl?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
-  supporters?: Prisma.SupportProfileCreateNestedManyWithoutFavouriteClubInput
+  supportProfiles?: Prisma.SupportProfileClubCreateNestedManyWithoutClubInput
   homeFixtures?: Prisma.FixtureCreateNestedManyWithoutHomeClubInput
   awayFixtures?: Prisma.FixtureCreateNestedManyWithoutAwayClubInput
 }
@@ -449,7 +449,7 @@ export type ClubUncheckedCreateInput = {
   websiteUrl?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
-  supporters?: Prisma.SupportProfileUncheckedCreateNestedManyWithoutFavouriteClubInput
+  supportProfiles?: Prisma.SupportProfileClubUncheckedCreateNestedManyWithoutClubInput
   homeFixtures?: Prisma.FixtureUncheckedCreateNestedManyWithoutHomeClubInput
   awayFixtures?: Prisma.FixtureUncheckedCreateNestedManyWithoutAwayClubInput
 }
@@ -471,7 +471,7 @@ export type ClubUpdateInput = {
   websiteUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  supporters?: Prisma.SupportProfileUpdateManyWithoutFavouriteClubNestedInput
+  supportProfiles?: Prisma.SupportProfileClubUpdateManyWithoutClubNestedInput
   homeFixtures?: Prisma.FixtureUpdateManyWithoutHomeClubNestedInput
   awayFixtures?: Prisma.FixtureUpdateManyWithoutAwayClubNestedInput
 }
@@ -493,7 +493,7 @@ export type ClubUncheckedUpdateInput = {
   websiteUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  supporters?: Prisma.SupportProfileUncheckedUpdateManyWithoutFavouriteClubNestedInput
+  supportProfiles?: Prisma.SupportProfileClubUncheckedUpdateManyWithoutClubNestedInput
   homeFixtures?: Prisma.FixtureUncheckedUpdateManyWithoutHomeClubNestedInput
   awayFixtures?: Prisma.FixtureUncheckedUpdateManyWithoutAwayClubNestedInput
 }
@@ -555,9 +555,9 @@ export type ClubUncheckedUpdateManyInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
-export type ClubNullableScalarRelationFilter = {
-  is?: Prisma.ClubWhereInput | null
-  isNot?: Prisma.ClubWhereInput | null
+export type ClubScalarRelationFilter = {
+  is?: Prisma.ClubWhereInput
+  isNot?: Prisma.ClubWhereInput
 }
 
 export type ClubCountOrderByAggregateInput = {
@@ -629,25 +629,18 @@ export type ClubSumOrderByAggregateInput = {
   founded?: Prisma.SortOrder
 }
 
-export type ClubScalarRelationFilter = {
-  is?: Prisma.ClubWhereInput
-  isNot?: Prisma.ClubWhereInput
-}
-
-export type ClubCreateNestedOneWithoutSupportersInput = {
-  create?: Prisma.XOR<Prisma.ClubCreateWithoutSupportersInput, Prisma.ClubUncheckedCreateWithoutSupportersInput>
-  connectOrCreate?: Prisma.ClubCreateOrConnectWithoutSupportersInput
+export type ClubCreateNestedOneWithoutSupportProfilesInput = {
+  create?: Prisma.XOR<Prisma.ClubCreateWithoutSupportProfilesInput, Prisma.ClubUncheckedCreateWithoutSupportProfilesInput>
+  connectOrCreate?: Prisma.ClubCreateOrConnectWithoutSupportProfilesInput
   connect?: Prisma.ClubWhereUniqueInput
 }
 
-export type ClubUpdateOneWithoutSupportersNestedInput = {
-  create?: Prisma.XOR<Prisma.ClubCreateWithoutSupportersInput, Prisma.ClubUncheckedCreateWithoutSupportersInput>
-  connectOrCreate?: Prisma.ClubCreateOrConnectWithoutSupportersInput
-  upsert?: Prisma.ClubUpsertWithoutSupportersInput
-  disconnect?: Prisma.ClubWhereInput | boolean
-  delete?: Prisma.ClubWhereInput | boolean
+export type ClubUpdateOneRequiredWithoutSupportProfilesNestedInput = {
+  create?: Prisma.XOR<Prisma.ClubCreateWithoutSupportProfilesInput, Prisma.ClubUncheckedCreateWithoutSupportProfilesInput>
+  connectOrCreate?: Prisma.ClubCreateOrConnectWithoutSupportProfilesInput
+  upsert?: Prisma.ClubUpsertWithoutSupportProfilesInput
   connect?: Prisma.ClubWhereUniqueInput
-  update?: Prisma.XOR<Prisma.XOR<Prisma.ClubUpdateToOneWithWhereWithoutSupportersInput, Prisma.ClubUpdateWithoutSupportersInput>, Prisma.ClubUncheckedUpdateWithoutSupportersInput>
+  update?: Prisma.XOR<Prisma.XOR<Prisma.ClubUpdateToOneWithWhereWithoutSupportProfilesInput, Prisma.ClubUpdateWithoutSupportProfilesInput>, Prisma.ClubUncheckedUpdateWithoutSupportProfilesInput>
 }
 
 export type NullableIntFieldUpdateOperationsInput = {
@@ -686,7 +679,7 @@ export type ClubUpdateOneRequiredWithoutAwayFixturesNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.ClubUpdateToOneWithWhereWithoutAwayFixturesInput, Prisma.ClubUpdateWithoutAwayFixturesInput>, Prisma.ClubUncheckedUpdateWithoutAwayFixturesInput>
 }
 
-export type ClubCreateWithoutSupportersInput = {
+export type ClubCreateWithoutSupportProfilesInput = {
   id?: string
   externalId?: number | null
   slug: string
@@ -707,7 +700,7 @@ export type ClubCreateWithoutSupportersInput = {
   awayFixtures?: Prisma.FixtureCreateNestedManyWithoutAwayClubInput
 }
 
-export type ClubUncheckedCreateWithoutSupportersInput = {
+export type ClubUncheckedCreateWithoutSupportProfilesInput = {
   id?: string
   externalId?: number | null
   slug: string
@@ -728,23 +721,23 @@ export type ClubUncheckedCreateWithoutSupportersInput = {
   awayFixtures?: Prisma.FixtureUncheckedCreateNestedManyWithoutAwayClubInput
 }
 
-export type ClubCreateOrConnectWithoutSupportersInput = {
+export type ClubCreateOrConnectWithoutSupportProfilesInput = {
   where: Prisma.ClubWhereUniqueInput
-  create: Prisma.XOR<Prisma.ClubCreateWithoutSupportersInput, Prisma.ClubUncheckedCreateWithoutSupportersInput>
+  create: Prisma.XOR<Prisma.ClubCreateWithoutSupportProfilesInput, Prisma.ClubUncheckedCreateWithoutSupportProfilesInput>
 }
 
-export type ClubUpsertWithoutSupportersInput = {
-  update: Prisma.XOR<Prisma.ClubUpdateWithoutSupportersInput, Prisma.ClubUncheckedUpdateWithoutSupportersInput>
-  create: Prisma.XOR<Prisma.ClubCreateWithoutSupportersInput, Prisma.ClubUncheckedCreateWithoutSupportersInput>
+export type ClubUpsertWithoutSupportProfilesInput = {
+  update: Prisma.XOR<Prisma.ClubUpdateWithoutSupportProfilesInput, Prisma.ClubUncheckedUpdateWithoutSupportProfilesInput>
+  create: Prisma.XOR<Prisma.ClubCreateWithoutSupportProfilesInput, Prisma.ClubUncheckedCreateWithoutSupportProfilesInput>
   where?: Prisma.ClubWhereInput
 }
 
-export type ClubUpdateToOneWithWhereWithoutSupportersInput = {
+export type ClubUpdateToOneWithWhereWithoutSupportProfilesInput = {
   where?: Prisma.ClubWhereInput
-  data: Prisma.XOR<Prisma.ClubUpdateWithoutSupportersInput, Prisma.ClubUncheckedUpdateWithoutSupportersInput>
+  data: Prisma.XOR<Prisma.ClubUpdateWithoutSupportProfilesInput, Prisma.ClubUncheckedUpdateWithoutSupportProfilesInput>
 }
 
-export type ClubUpdateWithoutSupportersInput = {
+export type ClubUpdateWithoutSupportProfilesInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   externalId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   slug?: Prisma.StringFieldUpdateOperationsInput | string
@@ -765,7 +758,7 @@ export type ClubUpdateWithoutSupportersInput = {
   awayFixtures?: Prisma.FixtureUpdateManyWithoutAwayClubNestedInput
 }
 
-export type ClubUncheckedUpdateWithoutSupportersInput = {
+export type ClubUncheckedUpdateWithoutSupportProfilesInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   externalId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   slug?: Prisma.StringFieldUpdateOperationsInput | string
@@ -803,7 +796,7 @@ export type ClubCreateWithoutHomeFixturesInput = {
   websiteUrl?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
-  supporters?: Prisma.SupportProfileCreateNestedManyWithoutFavouriteClubInput
+  supportProfiles?: Prisma.SupportProfileClubCreateNestedManyWithoutClubInput
   awayFixtures?: Prisma.FixtureCreateNestedManyWithoutAwayClubInput
 }
 
@@ -824,7 +817,7 @@ export type ClubUncheckedCreateWithoutHomeFixturesInput = {
   websiteUrl?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
-  supporters?: Prisma.SupportProfileUncheckedCreateNestedManyWithoutFavouriteClubInput
+  supportProfiles?: Prisma.SupportProfileClubUncheckedCreateNestedManyWithoutClubInput
   awayFixtures?: Prisma.FixtureUncheckedCreateNestedManyWithoutAwayClubInput
 }
 
@@ -850,7 +843,7 @@ export type ClubCreateWithoutAwayFixturesInput = {
   websiteUrl?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
-  supporters?: Prisma.SupportProfileCreateNestedManyWithoutFavouriteClubInput
+  supportProfiles?: Prisma.SupportProfileClubCreateNestedManyWithoutClubInput
   homeFixtures?: Prisma.FixtureCreateNestedManyWithoutHomeClubInput
 }
 
@@ -871,7 +864,7 @@ export type ClubUncheckedCreateWithoutAwayFixturesInput = {
   websiteUrl?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
-  supporters?: Prisma.SupportProfileUncheckedCreateNestedManyWithoutFavouriteClubInput
+  supportProfiles?: Prisma.SupportProfileClubUncheckedCreateNestedManyWithoutClubInput
   homeFixtures?: Prisma.FixtureUncheckedCreateNestedManyWithoutHomeClubInput
 }
 
@@ -908,7 +901,7 @@ export type ClubUpdateWithoutHomeFixturesInput = {
   websiteUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  supporters?: Prisma.SupportProfileUpdateManyWithoutFavouriteClubNestedInput
+  supportProfiles?: Prisma.SupportProfileClubUpdateManyWithoutClubNestedInput
   awayFixtures?: Prisma.FixtureUpdateManyWithoutAwayClubNestedInput
 }
 
@@ -929,7 +922,7 @@ export type ClubUncheckedUpdateWithoutHomeFixturesInput = {
   websiteUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  supporters?: Prisma.SupportProfileUncheckedUpdateManyWithoutFavouriteClubNestedInput
+  supportProfiles?: Prisma.SupportProfileClubUncheckedUpdateManyWithoutClubNestedInput
   awayFixtures?: Prisma.FixtureUncheckedUpdateManyWithoutAwayClubNestedInput
 }
 
@@ -961,7 +954,7 @@ export type ClubUpdateWithoutAwayFixturesInput = {
   websiteUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  supporters?: Prisma.SupportProfileUpdateManyWithoutFavouriteClubNestedInput
+  supportProfiles?: Prisma.SupportProfileClubUpdateManyWithoutClubNestedInput
   homeFixtures?: Prisma.FixtureUpdateManyWithoutHomeClubNestedInput
 }
 
@@ -982,7 +975,7 @@ export type ClubUncheckedUpdateWithoutAwayFixturesInput = {
   websiteUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  supporters?: Prisma.SupportProfileUncheckedUpdateManyWithoutFavouriteClubNestedInput
+  supportProfiles?: Prisma.SupportProfileClubUncheckedUpdateManyWithoutClubNestedInput
   homeFixtures?: Prisma.FixtureUncheckedUpdateManyWithoutHomeClubNestedInput
 }
 
@@ -992,13 +985,13 @@ export type ClubUncheckedUpdateWithoutAwayFixturesInput = {
  */
 
 export type ClubCountOutputType = {
-  supporters: number
+  supportProfiles: number
   homeFixtures: number
   awayFixtures: number
 }
 
 export type ClubCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  supporters?: boolean | ClubCountOutputTypeCountSupportersArgs
+  supportProfiles?: boolean | ClubCountOutputTypeCountSupportProfilesArgs
   homeFixtures?: boolean | ClubCountOutputTypeCountHomeFixturesArgs
   awayFixtures?: boolean | ClubCountOutputTypeCountAwayFixturesArgs
 }
@@ -1016,8 +1009,8 @@ export type ClubCountOutputTypeDefaultArgs<ExtArgs extends runtime.Types.Extensi
 /**
  * ClubCountOutputType without action
  */
-export type ClubCountOutputTypeCountSupportersArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  where?: Prisma.SupportProfileWhereInput
+export type ClubCountOutputTypeCountSupportProfilesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.SupportProfileClubWhereInput
 }
 
 /**
@@ -1052,7 +1045,7 @@ export type ClubSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   websiteUrl?: boolean
   createdAt?: boolean
   updatedAt?: boolean
-  supporters?: boolean | Prisma.Club$supportersArgs<ExtArgs>
+  supportProfiles?: boolean | Prisma.Club$supportProfilesArgs<ExtArgs>
   homeFixtures?: boolean | Prisma.Club$homeFixturesArgs<ExtArgs>
   awayFixtures?: boolean | Prisma.Club$awayFixturesArgs<ExtArgs>
   _count?: boolean | Prisma.ClubCountOutputTypeDefaultArgs<ExtArgs>
@@ -1117,7 +1110,7 @@ export type ClubSelectScalar = {
 
 export type ClubOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "externalId" | "slug" | "name" | "shortName" | "tla" | "crestUrl" | "country" | "competition" | "stadium" | "stadiumCapacity" | "founded" | "manager" | "websiteUrl" | "createdAt" | "updatedAt", ExtArgs["result"]["club"]>
 export type ClubInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  supporters?: boolean | Prisma.Club$supportersArgs<ExtArgs>
+  supportProfiles?: boolean | Prisma.Club$supportProfilesArgs<ExtArgs>
   homeFixtures?: boolean | Prisma.Club$homeFixturesArgs<ExtArgs>
   awayFixtures?: boolean | Prisma.Club$awayFixturesArgs<ExtArgs>
   _count?: boolean | Prisma.ClubCountOutputTypeDefaultArgs<ExtArgs>
@@ -1128,7 +1121,7 @@ export type ClubIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensi
 export type $ClubPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "Club"
   objects: {
-    supporters: Prisma.$SupportProfilePayload<ExtArgs>[]
+    supportProfiles: Prisma.$SupportProfileClubPayload<ExtArgs>[]
     homeFixtures: Prisma.$FixturePayload<ExtArgs>[]
     awayFixtures: Prisma.$FixturePayload<ExtArgs>[]
   }
@@ -1543,7 +1536,7 @@ readonly fields: ClubFieldRefs;
  */
 export interface Prisma__ClubClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
-  supporters<T extends Prisma.Club$supportersArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Club$supportersArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$SupportProfilePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  supportProfiles<T extends Prisma.Club$supportProfilesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Club$supportProfilesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$SupportProfileClubPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   homeFixtures<T extends Prisma.Club$homeFixturesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Club$homeFixturesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$FixturePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   awayFixtures<T extends Prisma.Club$awayFixturesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Club$awayFixturesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$FixturePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
@@ -1984,27 +1977,27 @@ export type ClubDeleteManyArgs<ExtArgs extends runtime.Types.Extensions.Internal
 }
 
 /**
- * Club.supporters
+ * Club.supportProfiles
  */
-export type Club$supportersArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+export type Club$supportProfilesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   /**
-   * Select specific fields to fetch from the SupportProfile
+   * Select specific fields to fetch from the SupportProfileClub
    */
-  select?: Prisma.SupportProfileSelect<ExtArgs> | null
+  select?: Prisma.SupportProfileClubSelect<ExtArgs> | null
   /**
-   * Omit specific fields from the SupportProfile
+   * Omit specific fields from the SupportProfileClub
    */
-  omit?: Prisma.SupportProfileOmit<ExtArgs> | null
+  omit?: Prisma.SupportProfileClubOmit<ExtArgs> | null
   /**
    * Choose, which related nodes to fetch as well
    */
-  include?: Prisma.SupportProfileInclude<ExtArgs> | null
-  where?: Prisma.SupportProfileWhereInput
-  orderBy?: Prisma.SupportProfileOrderByWithRelationInput | Prisma.SupportProfileOrderByWithRelationInput[]
-  cursor?: Prisma.SupportProfileWhereUniqueInput
+  include?: Prisma.SupportProfileClubInclude<ExtArgs> | null
+  where?: Prisma.SupportProfileClubWhereInput
+  orderBy?: Prisma.SupportProfileClubOrderByWithRelationInput | Prisma.SupportProfileClubOrderByWithRelationInput[]
+  cursor?: Prisma.SupportProfileClubWhereUniqueInput
   take?: number
   skip?: number
-  distinct?: Prisma.SupportProfileScalarFieldEnum | Prisma.SupportProfileScalarFieldEnum[]
+  distinct?: Prisma.SupportProfileClubScalarFieldEnum | Prisma.SupportProfileClubScalarFieldEnum[]
 }
 
 /**

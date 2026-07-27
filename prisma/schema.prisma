@@ -46,20 +46,31 @@ model UserProfile {
 }
 
 model SupportProfile {
-  id              String      @id @default(uuid()) @db.Uuid
-  userId          String      @unique @map("user_id") @db.Uuid
-  favouriteClubId String?     @map("favourite_club_id") @db.Uuid
-  tier            LoyaltyTier @default(NEW_FAN)
-  loyaltyPoints   Int         @default(0) @map("loyalty_points")
+  id            String      @id @default(uuid()) @db.Uuid
+  userId        String      @unique @map("user_id") @db.Uuid
+  tier          LoyaltyTier @default(NEW_FAN)
+  loyaltyPoints Int         @default(0) @map("loyalty_points")
 
-  user          UserProfile @relation(fields: [userId], references: [id], onDelete: Cascade)
-  favouriteClub Club?       @relation(fields: [favouriteClubId], references: [id], onDelete: SetNull)
+  user           UserProfile          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  favouriteClubs SupportProfileClub[]
 
   createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
   updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz(6)
 
-  @@index([favouriteClubId])
   @@map("support_profiles")
+}
+
+model SupportProfileClub {
+  supportProfileId String   @map("support_profile_id") @db.Uuid
+  clubId           String   @map("club_id") @db.Uuid
+  createdAt        DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  supportProfile SupportProfile @relation(fields: [supportProfileId], references: [id], onDelete: Cascade)
+  club           Club           @relation(fields: [clubId], references: [id], onDelete: Cascade)
+
+  @@id([supportProfileId, clubId])
+  @@index([clubId])
+  @@map("support_profile_clubs")
 }
 
 model Club {
@@ -78,9 +89,9 @@ model Club {
   manager         String? @db.VarChar(120)
   websiteUrl      String? @map("website_url")
 
-  supporters   SupportProfile[]
-  homeFixtures Fixture[]        @relation("HomeClub")
-  awayFixtures Fixture[]        @relation("AwayClub")
+  supportProfiles SupportProfileClub[]
+  homeFixtures    Fixture[]            @relation("HomeClub")
+  awayFixtures    Fixture[]            @relation("AwayClub")
 
   createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
   updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz(6)

@@ -53,6 +53,7 @@ export const AnyNull = runtime.AnyNull
 export const ModelName = {
   UserProfile: 'UserProfile',
   SupportProfile: 'SupportProfile',
+  SupportProfileClub: 'SupportProfileClub',
   Club: 'Club',
   Fixture: 'Fixture'
 } as const
@@ -89,7 +90,6 @@ export type UserProfileScalarFieldEnum = (typeof UserProfileScalarFieldEnum)[key
 export const SupportProfileScalarFieldEnum = {
   id: 'id',
   userId: 'userId',
-  favouriteClubId: 'favouriteClubId',
   tier: 'tier',
   loyaltyPoints: 'loyaltyPoints',
   createdAt: 'createdAt',
@@ -97,6 +97,15 @@ export const SupportProfileScalarFieldEnum = {
 } as const
 
 export type SupportProfileScalarFieldEnum = (typeof SupportProfileScalarFieldEnum)[keyof typeof SupportProfileScalarFieldEnum]
+
+
+export const SupportProfileClubScalarFieldEnum = {
+  supportProfileId: 'supportProfileId',
+  clubId: 'clubId',
+  createdAt: 'createdAt'
+} as const
+
+export type SupportProfileClubScalarFieldEnum = (typeof SupportProfileClubScalarFieldEnum)[keyof typeof SupportProfileClubScalarFieldEnum]
 
 
 export const ClubScalarFieldEnum = {

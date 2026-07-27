@@ -67,7 +67,11 @@ export default async function ProfilePage() {
       include: {
         supportProfile: {
           include: {
-            favouriteClub: true,
+            favouriteClubs: {
+              include: {
+                club: true,
+              },
+            },
           },
         },
       },
@@ -85,12 +89,12 @@ export default async function ProfilePage() {
         email: user.email ?? "Email unavailable",
         role: formatEnumLabel(databaseProfile.role),
         avatarUrl: getSafeAvatarUrl(databaseProfile.avatarUrl),
-        favouriteClub: databaseProfile.supportProfile?.favouriteClub
+        favouriteClub: databaseProfile.supportProfile?.favouriteClubs[0]?.club
           ? {
-              id: databaseProfile.supportProfile.favouriteClub.id,
-              name: databaseProfile.supportProfile.favouriteClub.name,
+              id: databaseProfile.supportProfile.favouriteClubs[0].club.id,
+              name: databaseProfile.supportProfile.favouriteClubs[0].club.name,
               crestUrl:
-                databaseProfile.supportProfile.favouriteClub.crestUrl,
+                databaseProfile.supportProfile.favouriteClubs[0].club.crestUrl,
             }
           : null,
         tier: formatEnumLabel(

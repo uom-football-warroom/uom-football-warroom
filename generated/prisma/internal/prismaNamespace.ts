@@ -399,6 +399,7 @@ type FieldRefInputType<Model, FieldType> = Model extends never ? never : FieldRe
 export const ModelName = {
   UserProfile: 'UserProfile',
   SupportProfile: 'SupportProfile',
+  SupportProfileClub: 'SupportProfileClub',
   Club: 'Club',
   Fixture: 'Fixture'
 } as const
@@ -416,7 +417,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "userProfile" | "supportProfile" | "club" | "fixture"
+    modelProps: "userProfile" | "supportProfile" | "supportProfileClub" | "club" | "fixture"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -565,6 +566,80 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         count: {
           args: Prisma.SupportProfileCountArgs<ExtArgs>
           result: runtime.Types.Utils.Optional<Prisma.SupportProfileCountAggregateOutputType> | number
+        }
+      }
+    }
+    SupportProfileClub: {
+      payload: Prisma.$SupportProfileClubPayload<ExtArgs>
+      fields: Prisma.SupportProfileClubFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.SupportProfileClubFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SupportProfileClubPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.SupportProfileClubFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SupportProfileClubPayload>
+        }
+        findFirst: {
+          args: Prisma.SupportProfileClubFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SupportProfileClubPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.SupportProfileClubFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SupportProfileClubPayload>
+        }
+        findMany: {
+          args: Prisma.SupportProfileClubFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SupportProfileClubPayload>[]
+        }
+        create: {
+          args: Prisma.SupportProfileClubCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SupportProfileClubPayload>
+        }
+        createMany: {
+          args: Prisma.SupportProfileClubCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.SupportProfileClubCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SupportProfileClubPayload>[]
+        }
+        delete: {
+          args: Prisma.SupportProfileClubDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SupportProfileClubPayload>
+        }
+        update: {
+          args: Prisma.SupportProfileClubUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SupportProfileClubPayload>
+        }
+        deleteMany: {
+          args: Prisma.SupportProfileClubDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.SupportProfileClubUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.SupportProfileClubUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SupportProfileClubPayload>[]
+        }
+        upsert: {
+          args: Prisma.SupportProfileClubUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SupportProfileClubPayload>
+        }
+        aggregate: {
+          args: Prisma.SupportProfileClubAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateSupportProfileClub>
+        }
+        groupBy: {
+          args: Prisma.SupportProfileClubGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.SupportProfileClubGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.SupportProfileClubCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.SupportProfileClubCountAggregateOutputType> | number
         }
       }
     }
@@ -771,7 +846,6 @@ export type UserProfileScalarFieldEnum = (typeof UserProfileScalarFieldEnum)[key
 export const SupportProfileScalarFieldEnum = {
   id: 'id',
   userId: 'userId',
-  favouriteClubId: 'favouriteClubId',
   tier: 'tier',
   loyaltyPoints: 'loyaltyPoints',
   createdAt: 'createdAt',
@@ -779,6 +853,15 @@ export const SupportProfileScalarFieldEnum = {
 } as const
 
 export type SupportProfileScalarFieldEnum = (typeof SupportProfileScalarFieldEnum)[keyof typeof SupportProfileScalarFieldEnum]
+
+
+export const SupportProfileClubScalarFieldEnum = {
+  supportProfileId: 'supportProfileId',
+  clubId: 'clubId',
+  createdAt: 'createdAt'
+} as const
+
+export type SupportProfileClubScalarFieldEnum = (typeof SupportProfileClubScalarFieldEnum)[keyof typeof SupportProfileClubScalarFieldEnum]
 
 
 export const ClubScalarFieldEnum = {
@@ -1104,6 +1187,7 @@ export type PrismaClientOptions = PrismaClientOptionsWithAccelerateUrl | PrismaC
 export type GlobalOmitConfig = {
   userProfile?: Prisma.UserProfileOmit
   supportProfile?: Prisma.SupportProfileOmit
+  supportProfileClub?: Prisma.SupportProfileClubOmit
   club?: Prisma.ClubOmit
   fixture?: Prisma.FixtureOmit
 }

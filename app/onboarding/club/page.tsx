@@ -47,7 +47,7 @@ export default async function ClubOnboardingPage() {
           country: string;
           competition: string;
         }[];
-        favouriteClubId: string | null;
+        initialSelectedClubIds: string[];
       }
     | undefined;
 
@@ -72,7 +72,11 @@ export default async function ClubOnboardingPage() {
         select: {
           supportProfile: {
             select: {
-              favouriteClubId: true,
+              favouriteClubs: {
+                select: {
+                  clubId: true,
+                },
+              },
             },
           },
         },
@@ -85,8 +89,10 @@ export default async function ClubOnboardingPage() {
         country: club.country ?? "",
         competition: club.competition ?? "",
       })),
-      favouriteClubId:
-        userProfile?.supportProfile?.favouriteClubId ?? null,
+      initialSelectedClubIds:
+        userProfile?.supportProfile?.favouriteClubs.map(
+          (item) => item.clubId,
+        ) ?? [],
     };
   } catch (databaseError) {
     console.error("Failed to load club onboarding data", databaseError);
@@ -102,14 +108,14 @@ export default async function ClubOnboardingPage() {
               Supporter onboarding
             </p>
             <h1 className="mt-3 text-3xl font-black tracking-tight text-slate-950 sm:text-4xl">
-              Choose Your Favourite Club
+              Choose Your Favourite Clubs
             </h1>
             <p className="mt-3 text-sm leading-6 text-slate-600 sm:text-base">
-              Select the club you support. We’ll use it to personalise your
+              Select the clubs you support. We’ll use them to personalise your
               profile, fixtures, and future War Room experience.
             </p>
             <p className="mt-2 text-sm text-slate-500">
-              You can change your favourite club later from your profile.
+              You can change your favourite clubs later from your profile.
             </p>
           </div>
 
@@ -138,7 +144,7 @@ export default async function ClubOnboardingPage() {
             ) : (
               <ClubOnboardingForm
                 clubs={clubData.clubs}
-                initialSelectedClubId={clubData.favouriteClubId}
+                initialSelectedClubIds={clubData.initialSelectedClubIds}
               />
             )}
           </div>

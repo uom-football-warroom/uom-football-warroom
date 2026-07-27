@@ -28,6 +28,11 @@ export type UserProfile = Prisma.UserProfileModel
  */
 export type SupportProfile = Prisma.SupportProfileModel
 /**
+ * Model SupportProfileClub
+ * 
+ */
+export type SupportProfileClub = Prisma.SupportProfileClubModel
+/**
  * Model Club
  * 
  */

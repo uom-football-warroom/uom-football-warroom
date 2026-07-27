@@ -10,6 +10,7 @@
  */
 export type * from './models/UserProfile'
 export type * from './models/SupportProfile'
+export type * from './models/SupportProfileClub'
 export type * from './models/Club'
 export type * from './models/Fixture'
 export type * from './commonInputTypes'

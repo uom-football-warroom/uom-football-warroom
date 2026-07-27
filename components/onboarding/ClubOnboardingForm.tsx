@@ -13,7 +13,7 @@ type OnboardingClub = {
 
 type ClubOnboardingFormProps = {
   clubs: OnboardingClub[];
-  initialSelectedClubId?: string | null;
+  initialSelectedClubIds?: string[];
 };
 
 function getValidCrestUrl(value: string | null) {
@@ -42,12 +42,12 @@ function getInitials(name: string) {
 
 export default function ClubOnboardingForm({
   clubs,
-  initialSelectedClubId,
+  initialSelectedClubIds,
 }: ClubOnboardingFormProps) {
   const [query, setQuery] = useState("");
   const [selectedCompetition, setSelectedCompetition] = useState("All");
-  const [selectedClubId, setSelectedClubId] = useState<string | null>(
-    initialSelectedClubId ?? null,
+  const [selectedClubIds, setSelectedClubIds] = useState<string[]>(
+    initialSelectedClubIds ?? [],
   );
 
   const competitions = useMemo(
@@ -69,11 +69,20 @@ export default function ClubOnboardingForm({
     );
   }, [clubs, query, selectedCompetition]);
 
-  const selectedClub =
-    clubs.find((club) => club.id === selectedClubId) ?? null;
+  const selectedClubs = clubs.filter((club) =>
+    selectedClubIds.includes(club.id),
+  );
+
+  function toggleClub(clubId: string) {
+    setSelectedClubIds((current) =>
+      current.includes(clubId)
+        ? current.filter((id) => id !== clubId)
+        : [...current, clubId],
+    );
+  }
 
   function handleContinue() {
-    if (!selectedClub) return;
+    if (selectedClubIds.length === 0) return;
 
     /*
      * Persistence and navigation will be connected to
@@ -141,20 +150,19 @@ export default function ClubOnboardingForm({
       <div className="p-4 sm:p-6">
         {filteredClubs.length > 0 ? (
           <div
-            role="radiogroup"
-            aria-label="Choose your favourite club"
+            role="group"
+            aria-label="Choose your favourite clubs"
             className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4"
           >
             {filteredClubs.map((club) => {
-              const isSelected = selectedClubId === club.id;
+              const isSelected = selectedClubIds.includes(club.id);
 
               return (
                 <button
                   key={club.id}
                   type="button"
-                  role="radio"
-                  aria-checked={isSelected}
-                  onClick={() => setSelectedClubId(club.id)}
+                  aria-pressed={isSelected}
+                  onClick={() => toggleClub(club.id)}
                   className={`relative flex min-h-64 w-full flex-col items-center rounded-xl border p-5 text-center outline-none transition focus-visible:ring-2 focus-visible:ring-green-600 focus-visible:ring-offset-2 ${
                     isSelected
                       ? "border-2 border-green-700 bg-green-50/70 shadow-sm"
@@ -214,27 +222,35 @@ export default function ClubOnboardingForm({
 
       <div className="border-t border-slate-200 bg-slate-50 p-4 sm:p-6">
         <div className="flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
-          {selectedClub ? (
-            <div className="flex min-w-0 items-center gap-4">
-              <ClubCrest club={selectedClub} size="small" />
-              <div className="min-w-0">
-                <p className="truncate font-bold text-slate-950">
-                  {selectedClub.name}
-                </p>
-                <p className="mt-1 text-sm text-slate-600">
-                  This club will appear on your supporter profile.
-                </p>
+          {selectedClubs.length > 0 ? (
+            <div className="min-w-0">
+              <p className="font-bold text-slate-950">Selected clubs</p>
+              <div className="mt-3 flex flex-wrap gap-3">
+                {selectedClubs.map((club) => (
+                  <div
+                    key={club.id}
+                    className="flex min-w-0 items-center gap-3"
+                  >
+                    <ClubCrest club={club} size="small" />
+                    <p className="max-w-40 truncate text-sm font-bold text-slate-950">
+                      {club.name}
+                    </p>
+                  </div>
+                ))}
               </div>
+              <p className="mt-3 text-sm text-slate-600">
+                These clubs will appear on your supporter profile.
+              </p>
             </div>
           ) : (
             <p className="text-sm font-medium text-slate-600">
-              Select one club to continue.
+              Select at least one club to continue.
             </p>
           )}
 
           <button
             type="button"
-            disabled={!selectedClub}
+            disabled={selectedClubIds.length === 0}
             onClick={handleContinue}
             className="flex min-h-12 w-full shrink-0 items-center justify-center gap-3 rounded-lg bg-green-700 px-6 py-3 text-sm font-bold text-white outline-none transition hover:bg-green-800 focus-visible:ring-2 focus-visible:ring-green-600 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:bg-slate-300 disabled:text-slate-500 sm:w-auto"
           >
