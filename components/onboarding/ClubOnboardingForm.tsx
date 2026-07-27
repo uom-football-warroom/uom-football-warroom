@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 import { useMemo, useState } from "react";
 
 type OnboardingClub = {
@@ -44,11 +45,14 @@ export default function ClubOnboardingForm({
   clubs,
   initialSelectedClubIds,
 }: ClubOnboardingFormProps) {
+  const router = useRouter();
   const [query, setQuery] = useState("");
   const [selectedCompetition, setSelectedCompetition] = useState("All");
   const [selectedClubIds, setSelectedClubIds] = useState<string[]>(
     initialSelectedClubIds ?? [],
   );
+  const [isSaving, setIsSaving] = useState(false);
+  const [saveError, setSaveError] = useState<string | null>(null);
 
   const competitions = useMemo(
     () => [
@@ -74,6 +78,7 @@ export default function ClubOnboardingForm({
   );
 
   function toggleClub(clubId: string) {
+    setSaveError(null);
     setSelectedClubIds((current) =>
       current.includes(clubId)
         ? current.filter((id) => id !== clubId)
@@ -81,13 +86,51 @@ export default function ClubOnboardingForm({
     );
   }
 
-  function handleContinue() {
-    if (selectedClubIds.length === 0) return;
+  async function handleContinue() {
+    if (selectedClubIds.length === 0 || isSaving) return;
 
-    /*
-     * Persistence and navigation will be connected to
-     * POST /api/profile/favourite-club in a later step.
-     */
+    setSaveError(null);
+    setIsSaving(true);
+
+    try {
+      const response = await fetch("/api/onboarding/favourite-clubs", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          clubIds: selectedClubIds,
+        }),
+      });
+
+      const result: unknown = await response.json().catch(() => null);
+      const isSuccessfulResult =
+        typeof result === "object" &&
+        result !== null &&
+        "success" in result &&
+        result.success === true;
+
+      if (!response.ok || !isSuccessfulResult) {
+        const message =
+          typeof result === "object" &&
+          result !== null &&
+          "message" in result &&
+          typeof result.message === "string"
+            ? result.message
+            : "We couldn’t save your favourite clubs. Please try again.";
+
+        setSaveError(message);
+        return;
+      }
+
+      router.push("/profile");
+    } catch {
+      setSaveError(
+        "We couldn’t save your favourite clubs. Please try again.",
+      );
+    } finally {
+      setIsSaving(false);
+    }
   }
 
   return (
@@ -248,26 +291,36 @@ export default function ClubOnboardingForm({
             </p>
           )}
 
-          <button
-            type="button"
-            disabled={selectedClubIds.length === 0}
-            onClick={handleContinue}
-            className="flex min-h-12 w-full shrink-0 items-center justify-center gap-3 rounded-lg bg-green-700 px-6 py-3 text-sm font-bold text-white outline-none transition hover:bg-green-800 focus-visible:ring-2 focus-visible:ring-green-600 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:bg-slate-300 disabled:text-slate-500 sm:w-auto"
-          >
-            Continue to Profile
-            <svg
-              aria-hidden="true"
-              viewBox="0 0 20 20"
-              className="h-5 w-5 fill-none stroke-current"
+          <div className="w-full shrink-0 sm:w-auto">
+            {saveError && (
+              <p
+                role="alert"
+                className="mb-3 max-w-sm text-sm font-medium text-red-700"
+              >
+                {saveError}
+              </p>
+            )}
+            <button
+              type="button"
+              disabled={selectedClubIds.length === 0 || isSaving}
+              onClick={handleContinue}
+              className="flex min-h-12 w-full items-center justify-center gap-3 rounded-lg bg-green-700 px-6 py-3 text-sm font-bold text-white outline-none transition hover:bg-green-800 focus-visible:ring-2 focus-visible:ring-green-600 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:bg-slate-300 disabled:text-slate-500 sm:w-auto"
             >
-              <path
-                d="M4 10h12m-5-5 5 5-5 5"
-                strokeWidth="1.8"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-            </svg>
-          </button>
+              {isSaving ? "Saving..." : "Continue to Profile"}
+              <svg
+                aria-hidden="true"
+                viewBox="0 0 20 20"
+                className="h-5 w-5 fill-none stroke-current"
+              >
+                <path
+                  d="M4 10h12m-5-5 5 5-5 5"
+                  strokeWidth="1.8"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+              </svg>
+            </button>
+          </div>
         </div>
       </div>
     </section>
