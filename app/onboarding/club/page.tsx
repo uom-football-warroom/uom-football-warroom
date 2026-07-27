@@ -1,83 +1,97 @@
 import type { Metadata } from "next";
+import { redirect } from "next/navigation";
 
 import ClubOnboardingForm from "@/components/onboarding/ClubOnboardingForm";
 import Footer from "@/components/layout/Footer";
 import Navbar from "@/components/layout/Navbar";
+import { prisma } from "@/lib/db";
+import { createClient } from "@/lib/supabase/server";
 
 export const metadata: Metadata = {
   title: "Choose Your Favourite Club | UOM Football War Room",
   description: "Choose a favourite club for your supporter profile.",
 };
 
-type OnboardingClub = {
-  id: string;
-  name: string;
-  crestUrl: string | null;
-  country: string;
-  competition: string;
-};
+function ClubDataStatus({
+  heading,
+  text,
+}: {
+  heading: string;
+  text: string;
+}) {
+  return (
+    <section className="rounded-xl border border-slate-200 bg-white px-5 py-16 text-center shadow-sm">
+      <h2 className="text-base font-bold text-slate-950">{heading}</h2>
+      <p className="mt-2 text-sm text-slate-500">{text}</p>
+    </section>
+  );
+}
 
-// Temporary preview data; this will be replaced with Prisma data in the next step.
-const previewClubs: OnboardingClub[] = [
-  {
-    id: "preview-arsenal",
-    name: "Arsenal",
-    crestUrl: "https://crests.football-data.org/57.png",
-    country: "England",
-    competition: "Premier League",
-  },
-  {
-    id: "preview-chelsea",
-    name: "Chelsea",
-    crestUrl: "https://crests.football-data.org/61.png",
-    country: "England",
-    competition: "Premier League",
-  },
-  {
-    id: "preview-liverpool",
-    name: "Liverpool",
-    crestUrl: "https://crests.football-data.org/64.png",
-    country: "England",
-    competition: "Premier League",
-  },
-  {
-    id: "preview-manchester-city",
-    name: "Manchester City",
-    crestUrl: "https://crests.football-data.org/65.png",
-    country: "England",
-    competition: "Premier League",
-  },
-  {
-    id: "preview-manchester-united",
-    name: "Manchester United",
-    crestUrl: "https://crests.football-data.org/66.png",
-    country: "England",
-    competition: "Premier League",
-  },
-  {
-    id: "preview-tottenham-hotspur",
-    name: "Tottenham Hotspur",
-    crestUrl: "https://crests.football-data.org/73.png",
-    country: "England",
-    competition: "Premier League",
-  },
-  {
-    id: "preview-newcastle-united",
-    name: "Newcastle United",
-    crestUrl: "https://crests.football-data.org/67.png",
-    country: "England",
-    competition: "Premier League",
-  },
-  {
-    id: "preview-aston-villa",
-    name: "Aston Villa",
-    crestUrl: "https://crests.football-data.org/58.png",
-    country: "England",
-    competition: "Premier League",
-  },
-];
+export default async function ClubOnboardingPage() {
+  const supabase = await createClient();
+  const {
+    data: { user },
+    error,
+  } = await supabase.auth.getUser();
 
-export default function ClubOnboardingPage() {
+  if (error || !user) {
+    redirect("/login?next=/onboarding/club");
+  }
+
+  let clubData:
+    | {
+        clubs: {
+          id: string;
+          name: string;
+          crestUrl: string | null;
+          country: string;
+          competition: string;
+        }[];
+        favouriteClubId: string | null;
+      }
+    | undefined;
+
+  try {
+    const [clubs, userProfile] = await Promise.all([
+      prisma.club.findMany({
+        select: {
+          id: true,
+          name: true,
+          crestUrl: true,
+          country: true,
+          competition: true,
+        },
+        orderBy: {
+          name: "asc",
+        },
+      }),
+      prisma.userProfile.findUnique({
+        where: {
+          id: user.id,
+        },
+        select: {
+          supportProfile: {
+            select: {
+              favouriteClubId: true,
+            },
+          },
+        },
+      }),
+    ]);
+
+    clubData = {
+      clubs: clubs.map((club) => ({
+        ...club,
+        country: club.country ?? "",
+        competition: club.competition ?? "",
+      })),
+      favouriteClubId:
+        userProfile?.supportProfile?.favouriteClubId ?? null,
+    };
+  } catch (databaseError) {
+    console.error("Failed to load club onboarding data", databaseError);
+  }
+
   return (
     <>
       <Navbar />
@@ -111,7 +125,22 @@ export default function ClubOnboardingPage() {
           </ol>
 
           <div className="mt-8 sm:mt-10">
-            <ClubOnboardingForm clubs={previewClubs} />
+            {!clubData ? (
+              <ClubDataStatus
+                heading="We couldn’t load the clubs"
+                text="Club information is temporarily unavailable. Please try again later."
+              />
+            ) : clubData.clubs.length === 0 ? (
+              <ClubDataStatus
+                heading="No clubs are currently available"
+                text="Club data has not been synchronised yet."
+              />
+            ) : (
+              <ClubOnboardingForm
+                clubs={clubData.clubs}
+                initialSelectedClubId={clubData.favouriteClubId}
+              />
+            )}
           </div>
         </section>
       </main>

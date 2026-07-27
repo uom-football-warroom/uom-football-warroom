@@ -42,12 +42,12 @@ function getInitials(name: string) {
 
 export default function ClubOnboardingForm({
   clubs,
-  initialSelectedClubId = null,
+  initialSelectedClubId,
 }: ClubOnboardingFormProps) {
   const [query, setQuery] = useState("");
   const [selectedCompetition, setSelectedCompetition] = useState("All");
   const [selectedClubId, setSelectedClubId] = useState<string | null>(
-    initialSelectedClubId,
+    initialSelectedClubId ?? null,
   );
 
   const competitions = useMemo(
