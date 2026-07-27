@@ -18,7 +18,7 @@ export default function ProfileDashboard({ profile }: ProfileDashboardProps) {
     <div className="grid items-start gap-6 lg:grid-cols-[minmax(0,1.45fr)_minmax(19rem,0.8fr)]">
       <div className="space-y-6">
         <ProfileHeader profile={profile} />
-        <FavouriteClubCard club={profile.favouriteClub ?? null} />
+        <FavouriteClubsCard clubs={profile.favouriteClubs} />
         <AccountSettingsForm profile={profile} />
       </div>
 
@@ -73,46 +73,66 @@ function ProfileHeader({ profile }: { profile: Profile }) {
   );
 }
 
-function FavouriteClubCard({
-  club,
+function FavouriteClubsCard({
+  clubs,
 }: {
-  club: Profile["favouriteClub"];
+  clubs: Profile["favouriteClubs"];
 }) {
   return (
     <section className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm sm:p-7">
       <div className="flex items-center justify-between gap-4">
-        <h2 className="text-xs font-black uppercase tracking-widest text-slate-500">Favourite Club</h2>
-        {club && <Link href={`/clubs/${club.id}`} className="text-xs font-bold text-green-700 hover:text-green-800">View club →</Link>}
+        <h2 className="text-xs font-black uppercase tracking-widest text-slate-500">Favourite Clubs</h2>
+        {clubs.length > 0 && <Link href="/onboarding/club" className="text-xs font-bold text-green-700 hover:text-green-800">Change favourite clubs →</Link>}
       </div>
-      {club ? (
-        <div className="mt-5 flex flex-col gap-5 sm:flex-row sm:items-center">
-          <div className="flex h-24 w-24 shrink-0 items-center justify-center rounded-xl bg-slate-50 p-4">
-            {club.crestUrl ? (
-              <Image src={club.crestUrl} alt={`${club.name} crest`} width={72} height={72} className="h-full w-full object-contain" />
-            ) : (
-              <span className="text-2xl font-black text-slate-400">
-                {club.name.charAt(0).toUpperCase()}
-              </span>
-            )}
-          </div>
-          <div className="min-w-0 flex-1">
-            <h3 className="text-xl font-black text-slate-950">{club.name}</h3>
-            <p className="mt-1 text-sm text-slate-500">Your favourite club</p>
-          </div>
-          <Link href="/onboarding/club" className="rounded-md border border-green-600 px-4 py-2.5 text-center text-xs font-bold text-green-700 outline-none transition hover:bg-green-50 focus-visible:ring-2 focus-visible:ring-green-600 focus-visible:ring-offset-2">Change Favourite Club</Link>
+      {clubs.length > 0 ? (
+        <div className="mt-5 grid gap-4 sm:grid-cols-2">
+          {clubs.map((club) => (
+            <FavouriteClubItem key={club.id} club={club} />
+          ))}
         </div>
       ) : (
         <div className="mt-5 rounded-lg border border-dashed border-slate-300 px-5 py-9 text-center">
-          <p className="text-sm text-slate-500">Not selected</p>
-          <Link href="/onboarding/club" className="mt-4 inline-block rounded-md bg-green-600 px-4 py-2.5 text-xs font-bold text-white outline-none transition hover:bg-green-700 focus-visible:ring-2 focus-visible:ring-green-600 focus-visible:ring-offset-2">Choose favourite club</Link>
+          <h3 className="font-bold text-slate-950">No favourite clubs selected</h3>
+          <p className="mx-auto mt-2 max-w-lg text-sm text-slate-500">Choose the clubs you support to personalise your profile and War Room experience.</p>
+          <Link href="/onboarding/club" className="mt-4 inline-block rounded-md bg-green-600 px-4 py-2.5 text-xs font-bold text-white outline-none transition hover:bg-green-700 focus-visible:ring-2 focus-visible:ring-green-600 focus-visible:ring-offset-2">Choose Favourite Clubs</Link>
         </div>
       )}
     </section>
   );
 }
 
+function FavouriteClubItem({
+  club,
+}: {
+  club: Profile["favouriteClubs"][number];
+}) {
+  const crestUrl = club.crestUrl?.trim() || null;
+
+  return (
+    <article className="flex flex-col gap-4 rounded-lg border border-slate-200 p-4 sm:flex-row sm:items-center">
+      <div className="flex h-20 w-20 shrink-0 items-center justify-center rounded-xl bg-slate-50 p-3">
+        {crestUrl ? (
+          <Image src={crestUrl} alt={`${club.name} crest`} width={64} height={64} className="h-full w-full object-contain" />
+        ) : (
+          <span className="text-2xl font-black text-slate-400">
+            {club.name.charAt(0).toUpperCase()}
+          </span>
+        )}
+      </div>
+      <div className="min-w-0 flex-1">
+        <h3 className="truncate text-lg font-black text-slate-950">{club.name}</h3>
+        <p className="mt-1 text-sm text-slate-500">Your favourite club</p>
+        <Link href={`/clubs/${club.id}`} className="mt-3 inline-block text-xs font-bold text-green-700 hover:text-green-800">View club →</Link>
+      </div>
+    </article>
+  );
+}
+
 function AccountSummary({ profile }: { profile: Profile }) {
-  const items = [["Favourite club", profile.favouriteClub?.name ?? "Not selected"], ["Account role", profile.role], ["Current tier", profile.tier], ["Loyalty points", String(profile.loyaltyPoints ?? 0)], ["Member since", profile.memberSince]];
+  const favouriteClubNames =
+    profile.favouriteClubs.map((club) => club.name).join(", ") ||
+    "Not selected";
+  const items = [["Favourite clubs", favouriteClubNames], ["Account role", profile.role], ["Current tier", profile.tier], ["Loyalty points", String(profile.loyaltyPoints ?? 0)], ["Member since", profile.memberSince]];
   return (
     <section className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
       <h2 className="font-black text-slate-950">Phase 1 Account Summary</h2>

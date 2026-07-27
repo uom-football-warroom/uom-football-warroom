@@ -10,7 +10,7 @@ import type { Profile } from "@/types/profile";
 
 export const metadata: Metadata = {
   title: "Profile | UOM Football War Room",
-  description: "Manage your supporter profile and favourite football club.",
+  description: "Manage your supporter profile and favourite football clubs.",
 };
 
 function formatEnumLabel(value: string) {
@@ -64,12 +64,26 @@ export default async function ProfilePage() {
       where: {
         id: user.id,
       },
-      include: {
+      select: {
+        id: true,
+        username: true,
+        displayName: true,
+        avatarUrl: true,
+        role: true,
+        createdAt: true,
         supportProfile: {
-          include: {
+          select: {
+            tier: true,
+            loyaltyPoints: true,
             favouriteClubs: {
-              include: {
-                club: true,
+              select: {
+                club: {
+                  select: {
+                    id: true,
+                    name: true,
+                    crestUrl: true,
+                  },
+                },
               },
             },
           },
@@ -89,14 +103,16 @@ export default async function ProfilePage() {
         email: user.email ?? "Email unavailable",
         role: formatEnumLabel(databaseProfile.role),
         avatarUrl: getSafeAvatarUrl(databaseProfile.avatarUrl),
-        favouriteClub: databaseProfile.supportProfile?.favouriteClubs[0]?.club
-          ? {
-              id: databaseProfile.supportProfile.favouriteClubs[0].club.id,
-              name: databaseProfile.supportProfile.favouriteClubs[0].club.name,
-              crestUrl:
-                databaseProfile.supportProfile.favouriteClubs[0].club.crestUrl,
-            }
-          : null,
+        favouriteClubs:
+          databaseProfile.supportProfile?.favouriteClubs
+            .map(({ club }) => ({
+              id: club.id,
+              name: club.name,
+              crestUrl: club.crestUrl,
+            }))
+            .sort((firstClub, secondClub) =>
+              firstClub.name.localeCompare(secondClub.name),
+            ) ?? [],
         tier: formatEnumLabel(
           databaseProfile.supportProfile?.tier ?? "NEW_FAN",
         ),
@@ -119,7 +135,7 @@ export default async function ProfilePage() {
           <div className="mb-8 max-w-2xl">
             <p className="text-xs font-bold uppercase tracking-[0.2em] text-green-700">Supporter account</p>
             <h1 className="mt-3 text-3xl font-black tracking-tight text-slate-950 sm:text-4xl">Your Profile</h1>
-            <p className="mt-3 text-sm leading-6 text-slate-500">Manage your Phase 1 account details, choose your favourite club, and preview features planned for future phases.</p>
+            <p className="mt-3 text-sm leading-6 text-slate-500">Manage your Phase 1 account details, choose your favourite clubs, and preview features planned for future phases.</p>
           </div>
           {profile ? (
             <ProfileDashboard profile={profile} />

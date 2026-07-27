@@ -9,11 +9,10 @@ export type Profile = {
   memberSince: string;
   accountStatus: "Active" | "Inactive";
   avatarUrl?: string | null;
-  favouriteClub?: {
+  favouriteClubs: {
     id: string;
     name: string;
     crestUrl: string | null;
-  } | null;
-  favouriteClubId?: string;
+  }[];
   notificationsEnabled: boolean;
 };

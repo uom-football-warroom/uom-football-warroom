@@ -11,7 +11,7 @@ export const mockProfile: Profile = {
   tier: "New Fan",
   memberSince: "January 2026",
   accountStatus: "Active",
-  favouriteClubId: "arsenal",
+  favouriteClubs: [],
   notificationsEnabled: true,
 };
 
