@@ -1,0 +1,46 @@
+name: uom-football-warroom
+
+services:
+  migrate:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: migrate
+
+    environment:
+      DIRECT_URL: ${DIRECT_URL}
+
+    restart: "no"
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: runner
+
+      args:
+        NEXT_PUBLIC_APP_URL: ${NEXT_PUBLIC_APP_URL}
+        NEXT_PUBLIC_SUPABASE_URL: ${NEXT_PUBLIC_SUPABASE_URL}
+        NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: ${NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY}
+
+    environment:
+      NODE_ENV: production
+
+      DATABASE_URL: ${DATABASE_URL}
+      DIRECT_URL: ${DIRECT_URL}
+
+      FOOTBALL_DATA_API_KEY: ${FOOTBALL_DATA_API_KEY}
+      CRON_SECRET: ${CRON_SECRET}
+
+      NEXT_PUBLIC_APP_URL: ${NEXT_PUBLIC_APP_URL}
+      NEXT_PUBLIC_SUPABASE_URL: ${NEXT_PUBLIC_SUPABASE_URL}
+      NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: ${NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY}
+
+    ports:
+      - "3000:3000"
+
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+
+    restart: unless-stopped
