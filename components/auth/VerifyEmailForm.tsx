@@ -127,7 +127,7 @@ export default function VerifyEmailForm() {
         // Verification is still valid when browser storage is unavailable.
       }
 
-      router.replace("/profile");
+      router.replace("/onboarding/club");
       router.refresh();
     } catch {
       setErrorMessage("The verification code is invalid or has expired.");

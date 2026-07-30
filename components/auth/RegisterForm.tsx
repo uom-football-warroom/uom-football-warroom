@@ -153,7 +153,7 @@ export default function RegisterForm() {
       setErrors({});
 
       if (data.session) {
-        router.replace("/profile");
+        router.replace("/onboarding/club");
         router.refresh();
         return;
       }
