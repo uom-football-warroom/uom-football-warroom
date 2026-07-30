@@ -2,24 +2,33 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { type FormEvent, useState } from "react";
+import { useActionState, useState } from "react";
+import {
+  updateProfile,
+  type ProfileUpdateState,
+} from "@/app/profile/actions";
 import LogoutButton from "@/components/auth/LogoutButton";
 import PhasePreviewCard from "@/components/profile/PhasePreviewCard";
 import type { Profile } from "@/types/profile";
 
 type ProfileDashboardProps = {
   profile: Profile;
+  initialDisplayName: string;
 };
 
-type Errors = Partial<Record<"displayName" | "username" | "email", string>>;
-
-export default function ProfileDashboard({ profile }: ProfileDashboardProps) {
+export default function ProfileDashboard({
+  profile,
+  initialDisplayName,
+}: ProfileDashboardProps) {
   return (
     <div className="grid items-start gap-6 lg:grid-cols-[minmax(0,1.45fr)_minmax(19rem,0.8fr)]">
       <div className="space-y-6">
         <ProfileHeader profile={profile} />
         <FavouriteClubsCard clubs={profile.favouriteClubs} />
-        <AccountSettingsForm profile={profile} />
+        <AccountSettingsForm
+          profile={profile}
+          initialDisplayName={initialDisplayName}
+        />
       </div>
 
       <aside className="space-y-5">
@@ -143,47 +152,39 @@ function AccountSummary({ profile }: { profile: Profile }) {
   );
 }
 
-function AccountSettingsForm({ profile }: { profile: Profile }) {
-  const [displayName, setDisplayName] = useState(profile.displayName);
-  const [username, setUsername] = useState(profile.username);
-  const [email, setEmail] = useState(profile.email);
-  const [notifications, setNotifications] = useState(profile.notificationsEnabled);
-  const [errors, setErrors] = useState<Errors>({});
-  const [saving, setSaving] = useState(false);
-  const [success, setSuccess] = useState("");
+const initialUpdateState: ProfileUpdateState = {
+  success: false,
+  message: "",
+};
 
-  function submit(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault();
-    const nextErrors: Errors = {};
-    if (!displayName.trim()) nextErrors.displayName = "Display name is required.";
-    if (!username.trim()) nextErrors.username = "Username is required.";
-    if (!email.trim()) nextErrors.email = "Email address is required.";
-    else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) nextErrors.email = "Enter a valid email address.";
-    setErrors(nextErrors);
-    setSuccess("");
-    if (Object.keys(nextErrors).length) return;
-    setSaving(true);
-    window.setTimeout(() => {
-      // TODO: Persist profile settings through the authenticated profile API.
-      setSaving(false);
-      setSuccess("Changes updated for this browser session only.");
-    }, 500);
-  }
+function AccountSettingsForm({
+  profile,
+  initialDisplayName,
+}: {
+  profile: Profile;
+  initialDisplayName: string;
+}) {
+  const [notifications, setNotifications] = useState(profile.notificationsEnabled);
+  const [state, formAction, pending] = useActionState(
+    updateProfile,
+    initialUpdateState,
+  );
 
   return (
     <section className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm sm:p-7">
       <h2 className="text-xl font-black text-slate-950">Account Settings</h2>
-      <form onSubmit={submit} noValidate className="mt-6 space-y-5">
-        <TextField id="display-name" label="Display name" value={displayName} onChange={setDisplayName} error={errors.displayName} />
-        <TextField id="username" label="Username" value={username} onChange={setUsername} error={errors.username} />
-        <TextField id="email" label="Email address" type="email" value={email} onChange={setEmail} error={errors.email} />
+      <form action={formAction} noValidate className="mt-6 space-y-5">
+        <TextField id="displayName" label="Display name" defaultValue={initialDisplayName} maxLength={80} error={state.errors?.displayName} />
+        <TextField id="username" label="Username" defaultValue={profile.username} minLength={3} maxLength={30} required error={state.errors?.username} />
+        <TextField id="email" label="Email address" type="email" defaultValue={profile.email} readOnly />
+        <TextField id="role" label="Account role" defaultValue={profile.role} readOnly />
         <div className="flex items-center justify-between gap-5 border-y border-slate-200 py-4">
           <div><p className="text-sm font-bold text-slate-900">Notifications</p><p className="mt-1 text-xs text-slate-500">Frontend preference only</p></div>
           <button type="button" role="switch" aria-checked={notifications} onClick={() => setNotifications((value) => !value)} className={`relative h-7 w-12 rounded-full outline-none transition focus-visible:ring-2 focus-visible:ring-green-600 focus-visible:ring-offset-2 ${notifications ? "bg-green-600" : "bg-slate-300"}`}><span className={`absolute top-1 h-5 w-5 rounded-full bg-white transition ${notifications ? "left-6" : "left-1"}`} /></button>
         </div>
-        {success && <p role="status" className="rounded-md bg-green-50 px-3 py-2 text-sm text-green-700">{success}</p>}
+        {state.message && <p role={state.success ? "status" : "alert"} className={`rounded-md px-3 py-2 text-sm ${state.success ? "bg-green-50 text-green-700" : "bg-red-50 text-red-700"}`}>{state.message}</p>}
         <div className="flex flex-col gap-3 sm:flex-row">
-          <button type="submit" disabled={saving} className="flex-1 rounded-md bg-green-600 px-5 py-3 text-sm font-bold text-white outline-none transition hover:bg-green-700 focus-visible:ring-2 focus-visible:ring-green-600 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-60">{saving ? "Updating…" : "Save Changes"}</button>
+          <button type="submit" disabled={pending} className="flex-1 rounded-md bg-green-600 px-5 py-3 text-sm font-bold text-white outline-none transition hover:bg-green-700 focus-visible:ring-2 focus-visible:ring-green-600 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-60">{pending ? "Updating…" : "Save Changes"}</button>
           <LogoutButton className="rounded-md border border-slate-300 px-5 py-3 text-center text-sm font-bold text-slate-700 outline-none transition hover:border-red-300 hover:text-red-700 focus-visible:ring-2 focus-visible:ring-red-500 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-60" />
         </div>
       </form>
@@ -191,11 +192,11 @@ function AccountSettingsForm({ profile }: { profile: Profile }) {
   );
 }
 
-function TextField({ id, label, value, onChange, error, type = "text" }: { id: string; label: string; value: string; onChange: (value: string) => void; error?: string; type?: string }) {
+function TextField({ id, label, defaultValue, error, type = "text", readOnly = false, required = false, minLength, maxLength }: { id: string; label: string; defaultValue: string; error?: string; type?: string; readOnly?: boolean; required?: boolean; minLength?: number; maxLength?: number }) {
   return (
     <div>
       <label htmlFor={id} className="mb-2 block text-xs font-bold text-slate-700">{label}</label>
-      <input id={id} type={type} value={value} onChange={(event) => onChange(event.target.value)} aria-invalid={Boolean(error)} aria-describedby={error ? `${id}-error` : undefined} className={`h-11 w-full rounded-md border bg-slate-50 px-3 text-sm text-slate-900 outline-none transition focus:bg-white focus:ring-2 ${error ? "border-red-400 focus:border-red-500 focus:ring-red-500/15" : "border-slate-300 focus:border-green-600 focus:ring-green-600/15"}`} />
+      <input id={id} name={readOnly ? undefined : id} type={type} defaultValue={defaultValue} readOnly={readOnly} required={required} minLength={minLength} maxLength={maxLength} aria-invalid={Boolean(error)} aria-describedby={error ? `${id}-error` : undefined} className={`h-11 w-full rounded-md border px-3 text-sm text-slate-900 outline-none transition focus:ring-2 ${readOnly ? "cursor-not-allowed bg-slate-100 text-slate-500" : "bg-slate-50 focus:bg-white"} ${error ? "border-red-400 focus:border-red-500 focus:ring-red-500/15" : "border-slate-300 focus:border-green-600 focus:ring-green-600/15"}`} />
       {error && <p id={`${id}-error`} className="mt-1.5 text-xs text-red-600">{error}</p>}
     </div>
   );

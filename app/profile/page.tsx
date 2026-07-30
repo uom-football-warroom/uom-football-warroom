@@ -138,7 +138,10 @@ export default async function ProfilePage() {
             <p className="mt-3 text-sm leading-6 text-slate-500">Manage your Phase 1 account details, choose your favourite clubs, and preview features planned for future phases.</p>
           </div>
           {profile ? (
-            <ProfileDashboard profile={profile} />
+            <ProfileDashboard
+              profile={profile}
+              initialDisplayName={databaseProfile?.displayName ?? ""}
+            />
           ) : (
             <ProfileUnavailable />
           )}
