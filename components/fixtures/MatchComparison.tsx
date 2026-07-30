@@ -1,6 +1,6 @@
-import type { Club, Fixture } from "@/types/football";
+import type { ApiFixture } from "@/types/football";
 
-export default function MatchComparison({ fixture }: { fixture: Fixture }) {
+export default function MatchComparison({ fixture }: { fixture: ApiFixture }) {
   const home = fixture.homeClub;
   const away = fixture.awayClub;
 
@@ -16,39 +16,30 @@ export default function MatchComparison({ fixture }: { fixture: Fixture }) {
       <div className="mt-6 space-y-7">
         <ValueRow
           label="League Position"
-          homeValue={formatPosition(home.comparison?.leaguePosition)}
-          awayValue={formatPosition(away.comparison?.leaguePosition)}
+          homeValue="N/A"
+          awayValue="N/A"
         />
         <ComparisonBar
           label="Average Goals Scored"
-          homeValue={home.comparison?.averageGoals}
-          awayValue={away.comparison?.averageGoals}
+          homeValue={undefined}
+          awayValue={undefined}
           format={(value) => value.toFixed(1)}
         />
         <ComparisonBar
           label="Average Possession"
-          homeValue={home.comparison?.averagePossession}
-          awayValue={away.comparison?.averagePossession}
+          homeValue={undefined}
+          awayValue={undefined}
           format={(value) => `${value}%`}
         />
-        <FormRow home={home} away={away} />
+        <div>
+          <p className="text-center text-xs text-slate-500">Recent Form</p>
+          <div className="mt-3 grid grid-cols-2 gap-6 text-xs text-slate-400">
+            <p>N/A</p>
+            <p className="text-right">N/A</p>
+          </div>
+        </div>
       </div>
 
-      <div className="mt-7 border-t border-slate-200 pt-6">
-        <h3 className="text-[10px] font-bold uppercase tracking-wider text-slate-500">Last head-to-head results</h3>
-        {fixture.headToHeadResults?.length ? (
-          <div className="mt-3 grid grid-cols-2 gap-2 sm:grid-cols-5">
-            {fixture.headToHeadResults.slice(0, 5).map((result, index) => (
-              <div key={`${result.score}-${index}`} className={`rounded-md border px-2 py-3 text-center ${outcomeStyles[result.homeOutcome]}`} aria-label={`${home.name} ${result.homeOutcome === "W" ? "win" : result.homeOutcome === "L" ? "loss" : "draw"}, ${result.score}`}>
-                <p className="text-[10px] font-black">{result.homeOutcome}</p>
-                <p className="mt-1 text-sm font-black">{result.score}</p>
-              </div>
-            ))}
-          </div>
-        ) : (
-          <p className="mt-3 text-sm text-slate-500">Head-to-head results are not available for this fixture.</p>
-        )}
-      </div>
     </section>
   );
 }
@@ -79,36 +70,3 @@ function ComparisonBar({ label, homeValue, awayValue, format }: { label: string;
     </div>
   );
 }
-
-function FormRow({ home, away }: { home: Club; away: Club }) {
-  return (
-    <div>
-      <p className="text-center text-xs text-slate-500">Recent Form</p>
-      <div className="mt-3 grid grid-cols-2 gap-6">
-        <Form form={home.comparison?.recentForm} clubName={home.name} />
-        <Form form={away.comparison?.recentForm} clubName={away.name} alignRight />
-      </div>
-    </div>
-  );
-}
-
-function Form({ form, clubName, alignRight = false }: { form?: Array<"W" | "D" | "L">; clubName: string; alignRight?: boolean }) {
-  if (!form?.length) return <p className={alignRight ? "text-right text-xs text-slate-400" : "text-xs text-slate-400"}>N/A</p>;
-  return (
-    <div className={`flex flex-wrap gap-1.5 ${alignRight ? "justify-end" : ""}`} aria-label={`${clubName} recent form: ${form.join(", ")}`}>
-      {form.slice(0, 5).map((result, index) => <span key={`${result}-${index}`} className={`flex h-7 w-7 items-center justify-center rounded text-[10px] font-black ${outcomeStyles[result]}`}>{result}</span>)}
-    </div>
-  );
-}
-
-function formatPosition(position?: number) {
-  if (position === undefined) return "N/A";
-  const suffix = position % 10 === 1 && position % 100 !== 11 ? "st" : position % 10 === 2 && position % 100 !== 12 ? "nd" : position % 10 === 3 && position % 100 !== 13 ? "rd" : "th";
-  return `${position}${suffix}`;
-}
-
-const outcomeStyles = {
-  W: "border-green-200 bg-green-50 text-green-700",
-  D: "border-slate-200 bg-slate-100 text-slate-600",
-  L: "border-red-200 bg-red-50 text-red-700",
-};

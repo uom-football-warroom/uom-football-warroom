@@ -2,10 +2,10 @@
 
 import { useMemo, useState } from "react";
 import ClubCard from "@/components/clubs/ClubCard";
-import type { Club } from "@/types/football";
+import type { ApiClub } from "@/types/football";
 
 type ClubGridProps = {
-  clubs: Club[];
+  clubs: ApiClub[];
 };
 
 export default function ClubGrid({ clubs }: ClubGridProps) {
@@ -13,7 +13,12 @@ export default function ClubGrid({ clubs }: ClubGridProps) {
   const [competition, setCompetition] = useState("All");
 
   const competitions = useMemo(
-    () => ["All", ...Array.from(new Set(clubs.map((club) => club.competition)))],
+    () => [
+      "All",
+      ...Array.from(
+        new Set(clubs.map((club) => club.competition || "Competition unavailable")),
+      ),
+    ],
     [clubs],
   );
 
@@ -23,7 +28,8 @@ export default function ClubGrid({ clubs }: ClubGridProps) {
     return clubs.filter((club) => {
       const matchesName = club.name.toLocaleLowerCase().includes(normalizedQuery);
       const matchesCompetition =
-        competition === "All" || club.competition === competition;
+        competition === "All" ||
+        (club.competition || "Competition unavailable") === competition;
 
       return matchesName && matchesCompetition;
     });

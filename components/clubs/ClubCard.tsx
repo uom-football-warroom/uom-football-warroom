@@ -1,37 +1,52 @@
 import Image from "next/image";
 import Link from "next/link";
-import type { Club } from "@/types/football";
+import type { ApiClub, Club } from "@/types/football";
 
 type ClubCardProps = {
-  club: Club;
+  club: Club | ApiClub;
   variant?: "compact" | "directory";
 };
 
 export default function ClubCard({ club, variant = "compact" }: ClubCardProps) {
+  const crestUrl =
+    ("crestUrl" in club ? club.crestUrl : club.logo)?.trim() || undefined;
+  const fallbackText =
+    ("tla" in club ? club.tla?.trim() : club.code?.trim()) ||
+    club.name.charAt(0).toUpperCase();
+  const competition = club.competition || "Competition unavailable";
+  const country = club.country || "Country unavailable";
+  const supporters = "supporters" in club ? club.supporters : null;
+
   if (variant === "compact") {
     return (
       <article className="rounded-xl border border-slate-200 bg-white p-5 text-center shadow-sm transition hover:-translate-y-1 hover:shadow-md">
         <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full border border-slate-200 bg-slate-50 p-2">
-          <Image
-            src={club.logo}
-            alt={`${club.name} logo`}
-            width={48}
-            height={48}
-            className="h-full w-full object-contain"
-          />
+          {crestUrl ? (
+            <Image
+              src={crestUrl}
+              alt={`${club.name} crest`}
+              width={48}
+              height={48}
+              className="h-full w-full object-contain"
+            />
+          ) : (
+            <span className="flex h-full w-full items-center justify-center rounded-full bg-green-50 text-sm font-black text-green-700">
+              {fallbackText}
+            </span>
+          )}
         </div>
 
         <h3 className="mt-4 font-bold text-slate-900">{club.name}</h3>
         <p className="mt-1 text-xs uppercase tracking-wide text-slate-400">
-          {club.country}
+          {country}
         </p>
-        <p className="mt-4 text-xs text-slate-500">{club.competition}</p>
+        <p className="mt-4 text-xs text-slate-500">{competition}</p>
 
         <div className="mt-5 flex items-center justify-between border-t border-slate-100 pt-4">
           <div className="text-left">
             <p className="text-[10px] uppercase text-slate-400">Supporters</p>
             <p className="text-sm font-black text-green-600">
-              {club.supporters}
+              {supporters}
             </p>
           </div>
           <Link
@@ -54,13 +69,22 @@ export default function ClubCard({ club, variant = "compact" }: ClubCardProps) {
       />
       <div className="relative flex aspect-[16/10] items-center justify-center overflow-hidden rounded-lg bg-slate-50 p-8 sm:p-10">
         <div className="absolute inset-x-8 top-1/2 h-12 -translate-y-1/2 rounded-full bg-white blur-xl" />
-        <Image
-          src={club.logo}
-          alt={`${club.name} crest`}
-          width={112}
-          height={112}
-          className="relative h-24 w-24 object-contain drop-shadow-md transition duration-200 group-hover:scale-105"
-        />
+        {crestUrl ? (
+          <Image
+            src={crestUrl}
+            alt={`${club.name} crest`}
+            width={112}
+            height={112}
+            className="relative h-24 w-24 object-contain drop-shadow-md transition duration-200 group-hover:scale-105"
+          />
+        ) : (
+          <span
+            aria-label={`${club.name} crest unavailable`}
+            className="relative flex h-24 w-24 items-center justify-center rounded-full border border-green-200 bg-green-50 text-2xl font-black text-green-700 drop-shadow-md transition duration-200 group-hover:scale-105"
+          >
+            {fallbackText}
+          </span>
+        )}
       </div>
 
       <div className="flex flex-1 flex-col px-1 pb-1 pt-4">
@@ -70,22 +94,22 @@ export default function ClubCard({ club, variant = "compact" }: ClubCardProps) {
               {club.name}
             </h2>
             <p className="mt-1 text-xs font-medium text-slate-500">
-              {club.competition}
+              {competition}
             </p>
           </div>
-          {club.country && (
+          {country && (
             <span className="shrink-0 rounded border border-slate-200 bg-slate-50 px-2 py-1 text-[10px] font-bold uppercase tracking-wide text-slate-500">
-              {club.country}
+              {country}
             </span>
           )}
         </div>
 
-        {club.supporters && (
+        {supporters && (
           <p className="mt-3 flex items-center gap-1.5 text-xs text-slate-500">
             <svg aria-hidden="true" viewBox="0 0 20 20" className="h-3.5 w-3.5 fill-current text-green-600">
               <path d="M7.5 9A3.5 3.5 0 1 0 7.5 2a3.5 3.5 0 0 0 0 7Zm5.75-.5a2.75 2.75 0 1 0 0-5.5 2.74 2.74 0 0 0-1.46.42A4.96 4.96 0 0 1 12.5 6c0 .82-.2 1.6-.55 2.28.4.14.84.22 1.3.22ZM7.5 10.5C3.91 10.5 1 12.74 1 15.5V17h13v-1.5c0-2.76-2.91-5-6.5-5Zm6.1-.46c1.72.94 2.9 2.44 2.9 4.21V17H19v-1.5c0-2.48-2.36-4.54-5.4-5.46Z" />
             </svg>
-            {club.supporters} supporters
+            {supporters} supporters
           </p>
         )}
 

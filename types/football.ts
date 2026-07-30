@@ -13,6 +13,121 @@ export type Club = {
   comparison?: ClubComparison;
 };
 
+export type ApiClub = {
+  id: string;
+  externalId: number | null;
+  slug: string;
+  name: string;
+  shortName: string | null;
+  tla: string | null;
+  crestUrl: string | null;
+  country: string | null;
+  competition: string | null;
+  stadium: string | null;
+  stadiumCapacity: number | null;
+  founded: number | null;
+  manager: string | null;
+  websiteUrl: string | null;
+  createdAt: string;
+  updatedAt: string;
+};
+
+export type ClubsApiResponse = {
+  success: boolean;
+  data?: ApiClub[];
+  message?: string;
+};
+
+export type FixtureStatus =
+  | "SCHEDULED"
+  | "LIVE"
+  | "COMPLETED"
+  | "POSTPONED"
+  | "CANCELLED";
+
+export type ApiFixture = {
+  id: string;
+  externalId: number | null;
+  competition: string;
+  competitionCode: string | null;
+  matchday: number | null;
+  homeClubId: string;
+  awayClubId: string;
+  startTime: string;
+  venue: string | null;
+  status: FixtureStatus;
+  homeScore: number | null;
+  awayScore: number | null;
+  referee: string | null;
+  createdAt: string;
+  updatedAt: string;
+  homeClub: ApiClub;
+  awayClub: ApiClub;
+};
+
+export type FixturesApiResponse = {
+  success: boolean;
+  data?: ApiFixture[];
+  message?: string;
+};
+
+export type FixtureHeadToHeadTeam = {
+  externalId: number | null;
+  name: string;
+  shortName: string | null;
+  tla: string | null;
+  crestUrl: string | null;
+};
+
+export type FixtureHeadToHeadItem = {
+  externalId: number;
+  utcDate: string;
+  status: string;
+  competition: {
+    name: string | null;
+    code: string | null;
+  };
+  homeTeam: FixtureHeadToHeadTeam;
+  awayTeam: FixtureHeadToHeadTeam;
+  homeScore: number | null;
+  awayScore: number | null;
+};
+
+export type FixtureDetailsApiData = {
+  fixture: ApiFixture;
+  headToHead: FixtureHeadToHeadItem[];
+  headToHeadUnavailable: boolean;
+  otherFixtures: ApiFixture[];
+};
+
+export type FixtureDetailsApiResponse = {
+  success: boolean;
+  data?: FixtureDetailsApiData;
+  message?: string;
+};
+
+type ApiFixtureFields = Omit<ApiFixture, "homeClub" | "awayClub">;
+
+export type ApiClubHomeFixture = ApiFixtureFields & {
+  awayClub: ApiClub;
+};
+
+export type ApiClubAwayFixture = ApiFixtureFields & {
+  homeClub: ApiClub;
+};
+
+export type ApiClubDetails = ApiClub & {
+  homeFixtures: ApiClubHomeFixture[];
+  awayFixtures: ApiClubAwayFixture[];
+  recentResults: ApiFixture[];
+};
+
+export type ClubDetailsApiResponse = {
+  success: boolean;
+  data?: ApiClubDetails;
+  message?: string;
+};
+
 export type ClubComparison = {
   leaguePosition?: number;
   averageGoals?: number;
@@ -29,7 +144,7 @@ export type Fixture = {
   dateISO?: string;
   time: string;
   venue: string;
-  status: "SCHEDULED" | "LIVE" | "COMPLETED" | "POSTPONED" | "CANCELLED";
+  status: FixtureStatus;
   homeScore?: number;
   awayScore?: number;
   matchMinute?: number;

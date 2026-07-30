@@ -1,15 +1,46 @@
 import type { Metadata } from "next";
+import { redirect } from "next/navigation";
 
 import LoginForm from "@/components/auth/LoginForm";
 import Footer from "@/components/layout/Footer";
 import Navbar from "@/components/layout/Navbar";
+import { createClient } from "@/lib/supabase/server";
 
 export const metadata: Metadata = {
   title: "Log In | UOM Football War Room",
   description: "Log in to follow your club and join the football community.",
 };
 
-export default function LoginPage() {
+function getSafeNextPath(value: string | string[] | undefined) {
+  const path = Array.isArray(value) ? value[0] : value;
+
+  if (!path || !path.startsWith("/") || path.startsWith("//")) {
+    return "/profile";
+  }
+
+  return path;
+}
+
+type LoginPageProps = {
+  searchParams: Promise<{
+    error?: string | string[];
+    next?: string | string[];
+  }>;
+};
+
+export default async function LoginPage({ searchParams }: LoginPageProps) {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (user) {
+    redirect("/profile");
+  }
+
+  const query = await searchParams;
+  const error = Array.isArray(query.error) ? query.error[0] : query.error;
+
   return (
     <>
       <Navbar />
@@ -33,7 +64,10 @@ export default function LoginPage() {
             </p>
           </div>
 
-          <LoginForm />
+          <LoginForm
+            confirmationError={error === "confirmation"}
+            nextPath={getSafeNextPath(query.next)}
+          />
         </section>
       </main>
 

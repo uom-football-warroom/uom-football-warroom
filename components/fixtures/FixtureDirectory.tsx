@@ -2,10 +2,10 @@
 
 import { useMemo, useState } from "react";
 import FixtureCard from "@/components/fixtures/FixtureCard";
-import type { Fixture } from "@/types/football";
+import type { ApiFixture } from "@/types/football";
 
 type FixtureDirectoryProps = {
-  fixtures: Fixture[];
+  fixtures: ApiFixture[];
 };
 
 type StatusFilter = "SCHEDULED" | "LIVE" | "COMPLETED" | "ALL";
@@ -45,17 +45,17 @@ export default function FixtureDirectory({ fixtures }: FixtureDirectoryProps) {
         !normalizedTeam ||
         fixture.homeClub.name.toLocaleLowerCase().includes(normalizedTeam) ||
         fixture.awayClub.name.toLocaleLowerCase().includes(normalizedTeam);
-      const matchesDate = !date || fixture.dateISO === date;
+      const matchesDate = !date || getDateKey(fixture.startTime) === date;
 
       return matchesStatus && matchesCompetition && matchesTeam && matchesDate;
     });
   }, [competition, date, fixtures, status, teamQuery]);
 
   const groupedFixtures = useMemo(() => {
-    const groups = new Map<string, Fixture[]>();
+    const groups = new Map<string, ApiFixture[]>();
 
     filteredFixtures.forEach((fixture) => {
-      const key = fixture.dateISO ?? fixture.date;
+      const key = getDateKey(fixture.startTime);
       groups.set(key, [...(groups.get(key) ?? []), fixture]);
     });
 
@@ -128,7 +128,7 @@ export default function FixtureDirectory({ fixtures }: FixtureDirectoryProps) {
           {groupedFixtures.map(([groupDate, groupFixtures]) => (
             <section key={groupDate}>
               <div className="flex items-center gap-4">
-                <h2 className="shrink-0 text-lg font-black text-slate-950 sm:text-xl">{formatDate(groupDate, groupFixtures[0].date)}</h2>
+                <h2 className="shrink-0 text-lg font-black text-slate-950 sm:text-xl">{formatDate(groupDate)}</h2>
                 <div className="h-px flex-1 bg-slate-300" />
               </div>
               <div className="mt-5 grid gap-5 lg:grid-cols-2">
@@ -161,8 +161,13 @@ function FilterField({ label, id, children }: { label: string; id: string; child
   );
 }
 
-function formatDate(value: string, fallback: string) {
-  if (!/^\d{4}-\d{2}-\d{2}$/.test(value)) return fallback;
+function getDateKey(value: string) {
+  const date = new Date(value);
+  return Number.isNaN(date.getTime()) ? value : date.toISOString().slice(0, 10);
+}
+
+function formatDate(value: string) {
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(value)) return "Date unavailable";
 
   return new Intl.DateTimeFormat("en-GB", {
     weekday: "long",

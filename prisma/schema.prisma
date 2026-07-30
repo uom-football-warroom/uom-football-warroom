@@ -1,0 +1,129 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum Role {
+  SUPPORTER
+  MODERATOR
+  ADMIN
+  CLUB_REP
+}
+
+enum LoyaltyTier {
+  NEW_FAN
+  SUPPORTER
+  CORE_SUPPORTER
+  ULTRAS
+}
+
+enum FixtureStatus {
+  SCHEDULED
+  LIVE
+  COMPLETED
+  POSTPONED
+  CANCELLED
+}
+
+model UserProfile {
+  // Supabase Auth user.id is used as this ID.
+  id          String  @id @db.Uuid
+  username    String  @unique @db.VarChar(30)
+  displayName String? @map("display_name") @db.VarChar(80)
+  avatarUrl   String? @map("avatar_url")
+  role        Role    @default(SUPPORTER)
+
+  supportProfile SupportProfile?
+
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  @@map("user_profiles")
+}
+
+model SupportProfile {
+  id            String      @id @default(uuid()) @db.Uuid
+  userId        String      @unique @map("user_id") @db.Uuid
+  tier          LoyaltyTier @default(NEW_FAN)
+  loyaltyPoints Int         @default(0) @map("loyalty_points")
+
+  user           UserProfile          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  favouriteClubs SupportProfileClub[]
+
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  @@map("support_profiles")
+}
+
+model SupportProfileClub {
+  supportProfileId String   @map("support_profile_id") @db.Uuid
+  clubId           String   @map("club_id") @db.Uuid
+  createdAt        DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  supportProfile SupportProfile @relation(fields: [supportProfileId], references: [id], onDelete: Cascade)
+  club           Club           @relation(fields: [clubId], references: [id], onDelete: Cascade)
+
+  @@id([supportProfileId, clubId])
+  @@index([clubId])
+  @@map("support_profile_clubs")
+}
+
+model Club {
+  id              String  @id @default(uuid()) @db.Uuid
+  externalId      Int?    @unique @map("external_id")
+  slug            String  @unique @db.VarChar(120)
+  name            String  @db.VarChar(120)
+  shortName       String? @map("short_name") @db.VarChar(80)
+  tla             String? @db.VarChar(10)
+  crestUrl        String? @map("crest_url")
+  country         String? @db.VarChar(80)
+  competition     String? @db.VarChar(120)
+  stadium         String? @db.VarChar(160)
+  stadiumCapacity Int?    @map("stadium_capacity")
+  founded         Int?
+  manager         String? @db.VarChar(120)
+  websiteUrl      String? @map("website_url")
+
+  supportProfiles SupportProfileClub[]
+  homeFixtures    Fixture[]            @relation("HomeClub")
+  awayFixtures    Fixture[]            @relation("AwayClub")
+
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  @@index([competition])
+  @@map("clubs")
+}
+
+model Fixture {
+  id              String        @id @default(uuid()) @db.Uuid
+  externalId      Int?          @unique @map("external_id")
+  competition     String        @db.VarChar(120)
+  competitionCode String?       @map("competition_code") @db.VarChar(20)
+  matchday        Int?
+  homeClubId      String        @map("home_club_id") @db.Uuid
+  awayClubId      String        @map("away_club_id") @db.Uuid
+  startTime       DateTime      @map("start_time") @db.Timestamptz(6)
+  venue           String?       @db.VarChar(160)
+  status          FixtureStatus @default(SCHEDULED)
+  homeScore       Int?          @map("home_score")
+  awayScore       Int?          @map("away_score")
+  referee         String?       @db.VarChar(120)
+
+  homeClub Club @relation("HomeClub", fields: [homeClubId], references: [id], onDelete: Restrict)
+  awayClub Club @relation("AwayClub", fields: [awayClubId], references: [id], onDelete: Restrict)
+
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  @@index([startTime])
+  @@index([status, startTime])
+  @@index([homeClubId])
+  @@index([awayClubId])
+  @@map("fixtures")
+}
