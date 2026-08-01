@@ -1,0 +1,88 @@
+name: CD
+
+on:
+  workflow_run:
+    workflows:
+      - CI
+    types:
+      - completed
+    branches:
+      - main
+
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: production-deployment
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    name: Deploy to DigitalOcean
+    runs-on: ubuntu-latest
+
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      github.event.workflow_run.conclusion == 'success'
+
+    steps:
+      - name: Configure SSH
+        env:
+          SSH_PRIVATE_KEY: ${{ secrets.DROPLET_SSH_KEY }}
+          SSH_KNOWN_HOSTS: ${{ secrets.DROPLET_KNOWN_HOSTS }}
+        run: |
+          install -m 700 -d ~/.ssh
+          printf '%s\n' "$SSH_PRIVATE_KEY" > ~/.ssh/uom_warroom_cd
+          chmod 600 ~/.ssh/uom_warroom_cd
+          printf '%s\n' "$SSH_KNOWN_HOSTS" > ~/.ssh/known_hosts
+          chmod 600 ~/.ssh/known_hosts
+
+      - name: Deploy application
+        env:
+          DROPLET_HOST: ${{ secrets.DROPLET_HOST }}
+          DROPLET_USER: ${{ secrets.DROPLET_USER }}
+          DROPLET_PORT: ${{ secrets.DROPLET_PORT }}
+        run: |
+          ssh \
+            -o StrictHostKeyChecking=yes \
+            -i ~/.ssh/uom_warroom_cd \
+            -p "$DROPLET_PORT" \
+            "$DROPLET_USER@$DROPLET_HOST" \
+            'bash -s' <<'REMOTE'
+          set -euo pipefail
+
+          cd /opt/uom-football-warroom
+
+          echo "Fetching latest main branch..."
+          git fetch origin main
+          git reset --hard origin/main
+
+          echo "Building Docker images..."
+          docker compose build
+
+          echo "Applying Prisma migrations..."
+          docker compose run --rm migrate
+
+          echo "Starting application..."
+          docker compose up -d app
+
+          echo "Running health check..."
+          for attempt in {1..30}; do
+            if curl -fsS http://127.0.0.1:3000 >/dev/null; then
+              echo "Deployment succeeded."
+              docker compose ps
+              docker image prune -f
+              exit 0
+            fi
+
+            echo "Waiting for application: ${attempt}/30"
+            sleep 2
+          done
+
+          echo "Deployment health check failed."
+          docker compose ps
+          docker compose logs --tail=100 app
+          exit 1
+          REMOTE
