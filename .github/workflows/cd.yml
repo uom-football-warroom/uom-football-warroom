@@ -43,12 +43,11 @@ jobs:
         env:
           DROPLET_HOST: ${{ secrets.DROPLET_HOST }}
           DROPLET_USER: ${{ secrets.DROPLET_USER }}
-          DROPLET_PORT: ${{ secrets.DROPLET_PORT }}
         run: |
           ssh \
             -o StrictHostKeyChecking=yes \
             -i ~/.ssh/uom_warroom_cd \
-            -p "$DROPLET_PORT" \
+            -p 22 \
             "$DROPLET_USER@$DROPLET_HOST" \
             'bash -s' <<'REMOTE'
           set -euo pipefail
